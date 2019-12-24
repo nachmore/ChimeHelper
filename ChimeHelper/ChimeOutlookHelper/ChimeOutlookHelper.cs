@@ -9,7 +9,15 @@ namespace ChimeOutlookHelper
   public class ChimeOutlookHelper
   {
 
-    public struct ChimeMeeting
+    public interface IChimeMeeting
+    {
+      string Subject { get; set; }
+      DateTime StartTime { get; set; }
+      DateTime EndTime { get; set; }
+      HashSet<string> Meetings { get; set; }
+    }
+
+    public struct ChimeMeeting : IChimeMeeting
     {
       public string Subject { get; set; }
       public DateTime StartTime { get; set; }
@@ -21,7 +29,7 @@ namespace ChimeOutlookHelper
     {
       var calendar = OutlookHelper.GetCalendar();
 
-      var appointments = OutlookHelper.GetAppointmentsAroundNow(calendar, 5);
+      var appointments = OutlookHelper.GetAppointmentsAroundNow(calendar, 15);
 
       var meetings = new List<ChimeMeeting>();
 
@@ -59,6 +67,9 @@ namespace ChimeOutlookHelper
     private static List<string> GetBridgeFromLocation(string location)
     {
       var rv = new List<string>();
+
+      if (string.IsNullOrEmpty(location))
+        return rv;
 
       // find chime bridge as whole number
 

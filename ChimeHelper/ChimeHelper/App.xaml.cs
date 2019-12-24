@@ -10,13 +10,13 @@ namespace ChimeHelper
   /// </summary>
   public partial class App : Application
   {
-    private TaskbarIcon taskbarIcon;
+    public static TaskbarIcon TrayIcon { get; set; }
 
     protected override void OnStartup(StartupEventArgs e)
     {
       base.OnStartup(e);
 
-      taskbarIcon = (TaskbarIcon)FindResource("ChimeHelperTaskbarIcon");
+      TrayIcon = (TaskbarIcon)FindResource("ChimeHelperTaskbarIcon");
     }
 
   }
