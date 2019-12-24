@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 namespace ChimeHelper
 {
+
   /// <summary>
   /// Interaction logic for MainWindow.xaml
   /// </summary>
@@ -25,6 +26,7 @@ namespace ChimeHelper
       InitializeComponent();
 
       ChimeOutlookHelper.ChimeOutlookHelper.GetMeetings();
+
     }
   }
 }
