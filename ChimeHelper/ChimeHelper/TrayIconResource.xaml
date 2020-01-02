@@ -109,10 +109,10 @@
     <Border Name="Border" >
       <Grid>
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
+          <ColumnDefinition Width="0" SharedSizeGroup="Icon"/>
           <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="Auto" SharedSizeGroup="Shortcut"/>
-          <ColumnDefinition Width="13"/>
+          <ColumnDefinition Width="0" SharedSizeGroup="Shortcut"/>
+          <ColumnDefinition Width="0"/>
         </Grid.ColumnDefinitions>
         <ContentPresenter 
         Name="Icon"
@@ -262,7 +262,7 @@
   </Style>
 
   <DataTemplate x:Key="MenuItemTemplate">
-    <Button Command="{Binding JoinMeetingCommand}" CommandParameter="{Binding}" DockPanel.Dock="Top" Width="300">
+    <Button Command="{Binding JoinMeetingCommand}" CommandParameter="{Binding}" DockPanel.Dock="Top" Background="Transparent" BorderThickness="0" Foreground="White" HorizontalContentAlignment="Left">
       <TextBlock Text="{Binding Subject}" TextTrimming="CharacterEllipsis"></TextBlock>
     </Button>
   </DataTemplate>
