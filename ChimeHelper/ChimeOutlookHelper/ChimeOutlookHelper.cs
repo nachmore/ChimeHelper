@@ -3,26 +3,20 @@ using System.Collections.Generic;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Microsoft.Office.Interop.Outlook;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace ChimeOutlookHelper
 {
   public class ChimeOutlookHelper
   {
+    public const string MEETING_URL_FORMAT = "chime://meeting/?pin={0}";
 
-    public interface IChimeMeeting
-    {
-      string Subject { get; set; }
-      DateTime StartTime { get; set; }
-      DateTime EndTime { get; set; }
-      HashSet<string> Meetings { get; set; }
-    }
-
-    public struct ChimeMeeting : IChimeMeeting
+    public struct ChimeMeeting
     {
       public string Subject { get; set; }
       public DateTime StartTime { get; set; }
       public DateTime EndTime { get; set; }
-      public HashSet<string> Meetings { get; set; }
+      public List<string> Pins { get; set; }
     }
 
     public static List<ChimeMeeting> GetMeetings()
@@ -35,9 +29,9 @@ namespace ChimeOutlookHelper
 
       foreach (Outlook.AppointmentItem appointment in appointments)
       {
-        var bridges = GetBridges(appointment);
+        var pins = GetPins(appointment);
 
-        if (bridges.Count > 0)
+        if (pins.Count > 0)
         {
           meetings.Add(
             new ChimeMeeting()
@@ -45,7 +39,7 @@ namespace ChimeOutlookHelper
               Subject = appointment.Subject,
               StartTime = appointment.Start,
               EndTime = appointment.End,
-              Meetings = bridges
+              Pins = new List<string>(pins)
             }
           );
         }
@@ -54,26 +48,30 @@ namespace ChimeOutlookHelper
       return meetings;
     }
 
-    private static HashSet<string> GetBridges(AppointmentItem appointment)
+    private static HashSet<string> GetPins(AppointmentItem appointment)
     {
       var rv = new List<string>();
 
-      rv.AddRange(GetBridgeFromLocation(appointment.Location));
-      rv.AddRange(GetBridgeFromBody(appointment.Body));
+      Debug.WriteLine(appointment.Start + " -> " + appointment.End + ": " + appointment.Subject + "\n\tLocation: " + appointment.Location);
+
+      rv.AddRange(GetPinsFromText(appointment.Location));
+      rv.AddRange(GetPinsFromBody(appointment.Body));
+
+      Debug.WriteLine("\tPins: " + string.Join("\n\t", rv));
 
       return new HashSet<string>(rv);
     }
 
-    private static List<string> GetBridgeFromLocation(string location)
+    private static List<string> GetPinsFromText(string location)
     {
       var rv = new List<string>();
 
       if (string.IsNullOrEmpty(location))
         return rv;
 
-      // find chime bridge as whole number
+      // find chime pin as whole number
 
-      var re = new Regex(@"\d[\d ]{9,}", RegexOptions.Multiline);
+      var re = new Regex(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s?\d[\d ]{9,}", RegexOptions.Multiline);
       var matches = re.Matches(location);
 
       foreach (Match match in matches)
@@ -85,8 +83,8 @@ namespace ChimeOutlookHelper
     }
 
     // There are too many random numbers in invitation bodies (especially embedded links)
-    // to be able to use the simple regex from GetBridgeFromLocation
-    private static List<string> GetBridgeFromBody(string body)
+    // to be able to use the simple regex from GetPinsFromLocation
+    private static List<string> GetPinsFromBody(string body)
     {
       var rv = new List<string>();
 
@@ -107,7 +105,7 @@ namespace ChimeOutlookHelper
       // if we couldn't find any URLs try more coarse matching
       if (rv.Count == 0)
       {
-        rv = GetBridgeFromLocation(body);
+        rv = GetPinsFromText(body);
       }
 
       return rv;

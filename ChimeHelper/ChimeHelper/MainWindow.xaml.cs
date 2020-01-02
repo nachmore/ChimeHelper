@@ -15,19 +15,36 @@ namespace ChimeHelper
   public partial class MainWindow : Window
   {
 
-    private class ChimeMeetingMenuItem : IChimeMeeting
+    /// <summary>
+    /// Explicitly separate from ChimeOutlookHelper.ChimeMeeting as these represent single meeting pins
+    /// </summary>
+    private class ChimeMeetingMenuItem
     {
       public string Subject { get; set; }
       public DateTime StartTime { get; set; }
       public DateTime EndTime { get; set; }
-      public HashSet<string> Meetings { get; set; }
+      public string Pin { get; set; }
 
-      public ChimeMeetingMenuItem(ChimeMeeting meeting)
+      public ChimeMeetingMenuItem() { }
+
+      public static List<ChimeMeetingMenuItem> Create(ChimeMeeting meeting)
+      {
+        var rv = new List<ChimeMeetingMenuItem>();
+
+        foreach (var pin in meeting.Pins)
+        {
+          rv.Add(new ChimeMeetingMenuItem(meeting, pin));
+        }
+
+        return rv;
+      }
+
+      private ChimeMeetingMenuItem(ChimeMeeting meeting, string pin)
       {
         this.Subject = meeting.Subject;
         this.StartTime = meeting.StartTime;
         this.EndTime = meeting.EndTime;
-        this.Meetings = meeting.Meetings;
+        this.Pin = pin;
       }
 
       public ICommand JoinMeetingCommand
@@ -36,7 +53,9 @@ namespace ChimeHelper
         {
           return new DelegateCommand(
             (object parameter) => {
-              MessageBox.Show(((ChimeMeetingMenuItem)parameter).Subject);
+              var meeting = (ChimeMeetingMenuItem)parameter;
+
+              System.Diagnostics.Process.Start(String.Format(ChimeOutlookHelper.ChimeOutlookHelper.MEETING_URL_FORMAT, meeting.Pin));
             }
           );
           
@@ -48,20 +67,31 @@ namespace ChimeHelper
 
     public MainWindow()
     {
+
       InitializeComponent();
+
+    }
+
+    private void button_Click(object sender, RoutedEventArgs e)
+    {
+
+      /*
+
+ for (var i = 0; i < 4; i++)
+ {
+   _meetings.Add(new ChimeMeetingMenuItem() { Subject = @"{i} random subject" });
+ }
+
+ App.TrayIcon.DataContext = _meetings;*/
 
       var meetings = ChimeOutlookHelper.ChimeOutlookHelper.GetMeetings();
       _meetings = new List<ChimeMeetingMenuItem>();
 
       foreach (var meeting in meetings)
       {
-        _meetings.Add(new ChimeMeetingMenuItem(meeting));
+        _meetings.AddRange(ChimeMeetingMenuItem.Create(meeting));
       }
 
-    }
-
-    private void button_Click(object sender, RoutedEventArgs e)
-    {
       App.TrayIcon.DataContext = _meetings;
     }
   }
