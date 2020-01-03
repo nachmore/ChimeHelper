@@ -206,5 +206,9 @@
   <ItemGroup>
     <Resource Include="Icons\fan.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\fan-loading.ico" />
+    <Resource Include="Icons\fan-off.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
