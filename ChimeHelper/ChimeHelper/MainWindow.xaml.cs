@@ -25,6 +25,8 @@ namespace ChimeHelper
       public DateTime EndTime { get; set; }
       public string Pin { get; set; }
 
+      public bool IsEmpty { get; set; }
+
       public ChimeMeetingMenuItem() { }
 
       public static List<ChimeMeetingMenuItem> Create(ChimeMeeting meeting)
@@ -58,31 +60,39 @@ namespace ChimeHelper
               System.Diagnostics.Process.Start(String.Format(ChimeOutlookHelper.ChimeOutlookHelper.MEETING_URL_FORMAT, meeting.Pin));
             }
           );
-          
+
         }
       }
     }
 
-    List<ChimeMeetingMenuItem> _meetings;
+    private List<ChimeMeetingMenuItem> _meetings;
+    private List<ChimeMeetingMenuItem> NO_MEETINGS = new List<ChimeMeetingMenuItem>() {
+      new ChimeMeetingMenuItem()
+        {
+          Subject = "No meetings!",
+          IsEmpty = true
+        }
+    };
+
+    private List<ChimeMeetingMenuItem> MEETINGS_LOADING = new List<ChimeMeetingMenuItem>() {
+      new ChimeMeetingMenuItem() 
+      {
+        Subject = "Loading...",
+        IsEmpty = true
+      }
+    };
 
     public MainWindow()
     {
 
       InitializeComponent();
 
+      App.TrayIcon.DataContext = MEETINGS_LOADING;
+
     }
 
     private void button_Click(object sender, RoutedEventArgs e)
     {
-
-      /*
-
- for (var i = 0; i < 4; i++)
- {
-   _meetings.Add(new ChimeMeetingMenuItem() { Subject = @"{i} random subject" });
- }
-
- App.TrayIcon.DataContext = _meetings;*/
 
       var meetings = ChimeOutlookHelper.ChimeOutlookHelper.GetMeetings();
       _meetings = new List<ChimeMeetingMenuItem>();
@@ -92,7 +102,7 @@ namespace ChimeHelper
         _meetings.AddRange(ChimeMeetingMenuItem.Create(meeting));
       }
 
-      App.TrayIcon.DataContext = _meetings;
+      App.TrayIcon.DataContext = (_meetings.Count > 0 ? _meetings : NO_MEETINGS);
     }
   }
 }
