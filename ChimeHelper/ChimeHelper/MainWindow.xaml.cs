@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using static ChimeOutlookHelper.ChimeOutlookHelper;
 
 namespace ChimeHelper
@@ -65,8 +67,25 @@ namespace ChimeHelper
       }
     }
 
+    private const string DEFAULT_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan.ico";
+    private const string NO_MEETINGS_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan-off.ico";
+    private const string LOADING_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan-loading.ico";
+
+    private class ChimeMeetingMenuItems<T> : List<T>
+    {
+      public string IconSource { get; set; }
+      public string ToolTipText { get; set; }
+
+      public ChimeMeetingMenuItems(string iconURI = DEFAULT_ICON, string tooltip = "")
+      {
+        IconSource = iconURI;
+        ToolTipText = tooltip;
+      }
+    }
+
     private List<ChimeMeetingMenuItem> _meetings;
-    private List<ChimeMeetingMenuItem> NO_MEETINGS = new List<ChimeMeetingMenuItem>() {
+
+    private static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> NO_MEETINGS = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(NO_MEETINGS_ICON, "Chime Helper: No Meetings Found") {
       new ChimeMeetingMenuItem()
         {
           Subject = "No meetings!",
@@ -74,7 +93,7 @@ namespace ChimeHelper
         }
     };
 
-    private List<ChimeMeetingMenuItem> MEETINGS_LOADING = new List<ChimeMeetingMenuItem>() {
+    private static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> MEETINGS_LOADING = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(LOADING_ICON, "Chime Helper: Loading...") {
       new ChimeMeetingMenuItem() 
       {
         Subject = "Loading...",
@@ -84,24 +103,22 @@ namespace ChimeHelper
 
     public MainWindow()
     {
-
       InitializeComponent();
 
       App.TrayIcon.DataContext = MEETINGS_LOADING;
-
     }
 
     private void button_Click(object sender, RoutedEventArgs e)
     {
 
       var meetings = ChimeOutlookHelper.ChimeOutlookHelper.GetMeetings();
-      _meetings = new List<ChimeMeetingMenuItem>();
+      _meetings = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>();
 
       foreach (var meeting in meetings)
       {
         _meetings.AddRange(ChimeMeetingMenuItem.Create(meeting));
       }
-
+      
       App.TrayIcon.DataContext = (_meetings.Count > 0 ? _meetings : NO_MEETINGS);
     }
   }
