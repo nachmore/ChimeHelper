@@ -4,7 +4,6 @@ using System.Windows;
 namespace ChimeHelper
 {
 
-
   /// <summary>
   /// Interaction logic for App.xaml
   /// </summary>
@@ -16,7 +15,12 @@ namespace ChimeHelper
     {
       base.OnStartup(e);
 
+      ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
       TrayIcon = (TaskbarIcon)FindResource("ChimeHelperTaskbarIcon");
+
+      new ChimeHelperTray(TrayIcon);
+      ChimeHelperState.Create();
     }
 
   }
