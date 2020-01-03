@@ -161,7 +161,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ChimeHelper.cs" />
+    <Compile Include="ChimeHelperState.cs" />
     <Compile Include="ChimeHelperTray.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
