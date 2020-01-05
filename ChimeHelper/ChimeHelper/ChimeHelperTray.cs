@@ -99,7 +99,7 @@ namespace ChimeHelper
           return new DelegateCommand(
           (object parameter) =>
           {
-            MainWindow.CreateAndShow();
+            AboutWindow.CreateAndShow();
           }
          );
         }
