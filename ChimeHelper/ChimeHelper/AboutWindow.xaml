@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChimeHelper"
         mc:Ignorable="d"
-        Title="About" Height="225" Width="400">
+        Title="About" Height="225" Width="400" Icon="Icons/fan.ico">
   <StackPanel>
     <Border Background="#192A38" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="42" VerticalAlignment="Top" Width="574">
       <TextBlock VerticalAlignment="Center" FontSize="25" Foreground="White" FontWeight="Light" Margin="10,0,0,0">Chime Helper</TextBlock>
@@ -13,7 +13,7 @@
 
     <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
       <TextBlock Text="Version:"/>
-      <TextBlock Text="{Binding Version}"/>
+      <TextBlock Text="{Binding Version}" Margin="5,0,0,0"/>
     </StackPanel>
 
     <TextBlock TextWrapping="Wrap" Margin="10,10,0,0">Simple application to detect Chime meeting pins in your Outlook calendar and give you 1-click access to them.</TextBlock>
