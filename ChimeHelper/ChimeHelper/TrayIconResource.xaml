@@ -408,7 +408,9 @@
     <!-- Set a simple context menu  -->
     <tb:TaskbarIcon.ContextMenu>
       <ContextMenu
-            Background="#192a38" Foreground="White" Margin="0" BorderBrush="#007980" BorderThickness="1" ItemsSource="{Binding}" ItemTemplate="{StaticResource MenuItemTemplate}" UsesItemContainerTemplate="True">
+            Background="#192a38" Foreground="White" Margin="0" BorderBrush="#007980" BorderThickness="1" ItemTemplate="{StaticResource MenuItemTemplate}" UsesItemContainerTemplate="True">
+        <MenuItem Header="About" Command="{Binding AboutMenuCommand}"/>
+        <MenuItem Header="Exit" Command="{Binding ExitMenuCommand}"/>
       </ContextMenu>
     </tb:TaskbarIcon.ContextMenu>
   </tb:TaskbarIcon>

@@ -70,7 +70,8 @@ namespace ChimeHelper
         get
         {
           return new DelegateCommand(
-            (object parameter) => {
+            (object parameter) =>
+            {
               var datagrid = (DataGrid)parameter;
               var meeting = (ChimeMeetingMenuItem)datagrid.SelectedItem;
 
@@ -90,8 +91,34 @@ namespace ChimeHelper
 
         }
       }
-    }
 
+      public ICommand AboutMenuCommand
+      {
+        get
+        {
+          return new DelegateCommand(
+          (object parameter) =>
+          {
+            MainWindow.CreateAndShow();
+          }
+         );
+        }
+      }
+
+      public ICommand ExitMenuCommand
+      {
+        get
+        {
+          return new DelegateCommand(
+          (object parameter) =>
+          {
+            App.Current.Shutdown();
+          }
+         );
+        }
+      }
+    }
+        
     public static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> NO_MEETINGS = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(NO_MEETINGS_ICON, "Chime Helper: No Meetings Found") {
       new ChimeMeetingMenuItem()
         {
