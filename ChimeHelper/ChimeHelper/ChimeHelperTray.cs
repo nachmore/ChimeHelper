@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
 using static ChimeOutlookHelper.ChimeOutlookHelper;
 
@@ -21,7 +22,7 @@ namespace ChimeHelper
     /// <summary>
     /// Explicitly separate from ChimeOutlookHelper.ChimeMeeting as these represent single meeting pins
     /// </summary>
-    private class ChimeMeetingMenuItem
+    public class ChimeMeetingMenuItem
     {
       public string Subject { get; set; }
       public DateTime StartTime { get; set; }
@@ -51,24 +52,9 @@ namespace ChimeHelper
         this.EndTime = meeting.EndTime;
         this.Pin = pin;
       }
-
-      public ICommand JoinMeetingCommand
-      {
-        get
-        {
-          return new DelegateCommand(
-            (object parameter) => {
-              var meeting = (ChimeMeetingMenuItem)parameter;
-
-              System.Diagnostics.Process.Start(String.Format(ChimeOutlookHelper.ChimeOutlookHelper.MEETING_URL_FORMAT, meeting.Pin));
-            }
-          );
-
-        }
-      }
     }
 
-    private class ChimeMeetingMenuItems<T> : List<T>
+    public class ChimeMeetingMenuItems<T> : List<T>
     {
       public string IconSource { get; set; }
       public string ToolTipText { get; set; }
@@ -78,9 +64,35 @@ namespace ChimeHelper
         IconSource = iconURI;
         ToolTipText = tooltip;
       }
+
+      public ICommand JoinMeetingCommand
+      {
+        get
+        {
+          return new DelegateCommand(
+            (object parameter) => {
+              var datagrid = (DataGrid)parameter;
+              var meeting = (ChimeMeetingMenuItem)datagrid.SelectedItem;
+
+              // will be null when we clear the selected item, since that also triggers a change event
+              // or when the DG's DataContext is refreshed
+              if (meeting != null)
+              {
+                // clears the selection style
+                datagrid.SelectedCells.Clear();
+
+                // clears the actual selected item, allows the same item to be selected again
+                datagrid.UnselectAll();
+                System.Diagnostics.Process.Start(String.Format(ChimeOutlookHelper.ChimeOutlookHelper.MEETING_URL_FORMAT, meeting.Pin));
+              }
+            }
+          );
+
+        }
+      }
     }
 
-    private static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> NO_MEETINGS = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(NO_MEETINGS_ICON, "Chime Helper: No Meetings Found") {
+    public static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> NO_MEETINGS = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(NO_MEETINGS_ICON, "Chime Helper: No Meetings Found") {
       new ChimeMeetingMenuItem()
         {
           Subject = "No meetings!",
@@ -88,7 +100,7 @@ namespace ChimeHelper
         }
     };
 
-    private static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> MEETINGS_LOADING = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(LOADING_ICON, "Chime Helper: Loading...") {
+    public static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> MEETINGS_LOADING = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(LOADING_ICON, "Chime Helper: Loading...") {
       new ChimeMeetingMenuItem()
       {
         Subject = "Loading...",
@@ -100,24 +112,7 @@ namespace ChimeHelper
     {
       _tray = trayIcon;
       _tray.DataContext = MEETINGS_LOADING;
-
-      trayIcon.LeftClickCommand = TrayIconLeftClick;
     }
-
-    public ICommand TrayIconLeftClick
-    {
-      get
-      {
-        return new DelegateCommand(
-          (object parameter) =>
-          {
-            MainWindow.CreateAndShow();
-          }
-        );
-
-      }
-    }
-
 
   }
 }
