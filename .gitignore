@@ -153,6 +153,8 @@ AutoTest.Net/
 # Web workbench (sass)
 .sass-cache/
 
+ChimeHelperSetup.exe
+
 # Installshield output folder
 [Ee]xpress/
 
