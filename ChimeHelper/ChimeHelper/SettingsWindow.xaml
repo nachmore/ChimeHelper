@@ -25,7 +25,7 @@
 
       <Grid.RowDefinitions>
         <RowDefinition/>
-        <RowDefinition/>
+        <RowDefinition Height="5"/>
         <RowDefinition/>
         <RowDefinition/>
       </Grid.RowDefinitions>
@@ -33,8 +33,8 @@
       <TextBlock Grid.Row="0" Grid.Column="0">Personalized ID (eg: "my_awesome_bridge"):</TextBlock>
       <TextBox Grid.Row="0" Grid.Column="1" MaxLength="50" Text="{Binding PersonalizedId, Mode=TwoWay}"></TextBox>
       
-      <TextBlock Grid.Row="1" Grid.Column="0">Personal ID (eg: "123456789"):</TextBlock>
-      <TextBox Grid.Row="1" Grid.Column="1" MaxLength="20" Text="{Binding PersonalId, Mode=TwoWay}"></TextBox>
+      <TextBlock Grid.Row="2" Grid.Column="0">Personal ID (eg: "123456789"):</TextBlock>
+      <TextBox Grid.Row="2" Grid.Column="1" MaxLength="20" Text="{Binding PersonalId, Mode=TwoWay}"></TextBox>
     </Grid>
 
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
