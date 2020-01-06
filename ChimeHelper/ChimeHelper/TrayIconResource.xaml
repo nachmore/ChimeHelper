@@ -2,9 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:tb="http://www.hardcodet.net/taskbar"
                     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:chxaml ="clr-namespace:ChimeHelper.XAMLExtenders"
 >
 
-  <ImageSourceConverter x:Key="ImageSourceConverter" />
+  <chxaml:BoolToObjectConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+  <chxaml:BoolToObjectConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
 
   <Style x:Key="{x:Type ContextMenu}" TargetType="{x:Type ContextMenu}">
     <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -306,7 +308,7 @@
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
-  
+
   <tb:TaskbarIcon x:Name="ChimeHelperTaskbarIcon" x:Key="ChimeHelperTaskbarIcon"
       IconSource="{Binding IconSource}"
       ToolTipText="{Binding ToolTipText}">
@@ -321,12 +323,13 @@
           </StackPanel>
         </Border>
 
-        <DataGrid ItemsSource="{Binding}" 
+        <DataGrid x:Name="ChimeMeetings" ItemsSource="{Binding}" 
                   AutoGenerateColumns="False" SelectionMode="Single" 
                   CanUserAddRows="False" CanUserResizeColumns="False" CanUserReorderColumns="False" 
                   CanUserSortColumns="False" CanUserResizeRows="False"
                   HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="LightGray"
                   Background="#192a38" RowHeaderWidth="0"
+                  Visibility="{Binding IsEmpty, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                   >
           <DataGrid.Resources>
             <Style TargetType="{x:Type DataGridCell}">
@@ -405,6 +408,12 @@
           </i:Interaction.Triggers>
           
         </DataGrid>
+        <TextBlock Background="White" Padding="10,10,10,20" Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibilityConverter}}">
+            There are no current meetings with Chime pins in your Outlook calendar that we could detect.
+            <LineBreak/>
+            <LineBreak/>
+            If you believe that we've missed something, please <chxaml:HyperlinkAuto NavigateUri="https://github.com/nachmore/AmazonChimeHelper/issues/new">open an Issue</chxaml:HyperlinkAuto> with some example text.
+        </TextBlock>
       </StackPanel>
     </tb:TaskbarIcon.TrayPopup>
     

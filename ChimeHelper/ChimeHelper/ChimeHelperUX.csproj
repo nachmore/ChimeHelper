@@ -217,6 +217,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="XAMLExtenders\BoolToObjectConverter.cs" />
+    <Compile Include="XAMLExtenders\HyperlinkAuto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
