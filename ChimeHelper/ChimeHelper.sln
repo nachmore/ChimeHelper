@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChimeOutlookHelper", "Chime
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChimeHelperTests", "ChimeHelperTests\ChimeHelperTests.csproj", "{A483C81B-89F6-4AE9-BB0F-18177FF7D82F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{BC5F172A-A91D-4009-B8C1-D8DAE3A24750}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{BC5F172A-A91D-4009-B8C1-D8DAE3A24750}"
 	ProjectSection(SolutionItems) = preProject
 		InstallScript\ChimeHelperInstaller.nsi = InstallScript\ChimeHelperInstaller.nsi
 	EndProjectSection

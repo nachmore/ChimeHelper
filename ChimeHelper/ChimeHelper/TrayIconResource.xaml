@@ -315,7 +315,10 @@
       <StackPanel MaxWidth="750">
 
         <Border Height="50" Background="#192A38">
-          <TextBlock VerticalAlignment="Center" FontSize="22" FontWeight="ExtraLight" Foreground="White" Margin="10,0,10,0">Chime Helper</TextBlock>
+          <StackPanel Orientation="Horizontal">
+            <Image Height="28" Width="28" Source="/Icons/fan.ico" Margin="10,0,0,0"></Image>
+            <TextBlock VerticalAlignment="Center" FontSize="25" Foreground="White" FontWeight="Light" Margin="5,0,0,0">Chime Helper</TextBlock>
+          </StackPanel>
         </Border>
 
         <DataGrid ItemsSource="{Binding}" 
