@@ -29,8 +29,6 @@ namespace ChimeHelper
       public DateTime EndTime { get; set; }
       public string Pin { get; set; }
 
-      public bool IsEmpty { get; set; }
-
       public ChimeMeetingMenuItem() { }
 
       public static List<ChimeMeetingMenuItem> Create(ChimeMeeting meeting)
@@ -58,8 +56,9 @@ namespace ChimeHelper
     {
       public string IconSource { get; set; }
       public string ToolTipText { get; set; }
+      public bool IsEmpty { get { return Count == 0; } }
 
-      public ChimeMeetingMenuItems(string iconURI = DEFAULT_ICON, string tooltip = "")
+      public ChimeMeetingMenuItems(string iconURI = DEFAULT_ICON, string tooltip = "Chime Helper")
       {
         IconSource = iconURI;
         ToolTipText = tooltip;
@@ -117,24 +116,21 @@ namespace ChimeHelper
          );
         }
       }
+
     }
-        
-    public static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> NO_MEETINGS = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(NO_MEETINGS_ICON, "Chime Helper: No Meetings Found") {
-      new ChimeMeetingMenuItem()
-        {
-          Subject = "No meetings!",
-          IsEmpty = true
-        }
-    };
 
-    public static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> MEETINGS_LOADING = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(LOADING_ICON, "Chime Helper: Loading...") {
-      new ChimeMeetingMenuItem()
-      {
-        Subject = "Loading...",
-        IsEmpty = true
-      }
-    };
+    public static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> NO_MEETINGS =
+      new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(
+        iconURI: NO_MEETINGS_ICON,
+        tooltip: "Chime Helper: No Meetings Found"
+      );
 
+    public static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> MEETINGS_LOADING =
+      new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(
+        iconURI: LOADING_ICON,
+        tooltip: "Chime Helper: Loading..."
+      );
+    
     public ChimeHelperTray(TaskbarIcon trayIcon)
     {
       _tray = trayIcon;
