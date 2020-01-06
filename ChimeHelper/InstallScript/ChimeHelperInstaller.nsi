@@ -19,7 +19,7 @@ RequestExecutionLevel admin
 ;--------------------------------
 
 ; Pages
-  !define MUI_ICON "..\ChimeHelper\Icons\fan-black.ico"
+  !define MUI_ICON "..\ChimeHelper\Icons\fan.ico"
 
   !define MUI_COMPONENTSPAGE_TEXT_TOP "Select the Components you want to install and uncheck the ones you you do not want to install. Click next to continue."
   !define MUI_COMPONENTSPAGE_TEXT_DESCRIPTION_TITLE "Description"
@@ -44,7 +44,7 @@ RequestExecutionLevel admin
 
 ;--------------------------------
 Function LaunchLink
-  ExecShell "" "$INSTDIR\ChimeHelper.exe"
+  ShellExecAsUser::ShellExecAsUser "" "$INSTDIR\ChimeHelper.exe"
 FunctionEnd
 
 UninstPage uninstConfirm
@@ -115,7 +115,7 @@ SectionEnd
 
 Section "Start Menu icon" SecStartMenuIcon
   # Start Menu
-  CreateShortCut "$SMPROGRAMS\ChimeHelper.lnk" "$INSTDIR\ChimeHelper.exe" "" "$INSTDIR\ChimeHelper.exe" 0
+  CreateShortCut "$SMPROGRAMS\Chime Helper.lnk" "$INSTDIR\ChimeHelper.exe" "" "$INSTDIR\ChimeHelper.exe" 0
   
 SectionEnd
 
