@@ -11,6 +11,8 @@ namespace ChimeOutlookHelper
   static class OutlookHelper
   {
 
+    private const int DEFAULT_SEARCH_HOURS = 1;
+
     public static Outlook.MAPIFolder GetCalendar()
     {
       var outlook = new Outlook.Application();
@@ -36,9 +38,9 @@ namespace ChimeOutlookHelper
       throw new InvalidOperationException("Couldn't find a Calendar in the current Outlook installation");
     }
 
-    public static Outlook.Items GetAppointmentsAroundNow(Outlook.MAPIFolder calendar, int hours = 1)
+    public static Outlook.Items GetAppointmentsAroundNow(Outlook.MAPIFolder calendar, int hours = DEFAULT_SEARCH_HOURS)
     {
-      var start = DateTime.Now.Subtract(new TimeSpan(7,hours, 0, 0));
+      var start = DateTime.Now.Subtract(new TimeSpan(hours, 0, 0));
       var end = start.Add(new TimeSpan(hours * 2, 0, 0));
 
       return GetAppointmentsInRange(calendar, start, end);

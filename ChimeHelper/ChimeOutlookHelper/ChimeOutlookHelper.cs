@@ -23,7 +23,7 @@ namespace ChimeOutlookHelper
     {
       var calendar = OutlookHelper.GetCalendar();
 
-      var appointments = OutlookHelper.GetAppointmentsAroundNow(calendar, 15);
+      var appointments = OutlookHelper.GetAppointmentsAroundNow(calendar);
 
       var meetings = new List<ChimeMeeting>();
 
