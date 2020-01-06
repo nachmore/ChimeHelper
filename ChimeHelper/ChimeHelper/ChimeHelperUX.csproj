@@ -211,12 +211,19 @@
       <DependentUpon>AboutWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="SettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="TrayIconResource.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XAMLExtenders\BoolToObjectConverter.cs" />
     <Compile Include="XAMLExtenders\HyperlinkAuto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

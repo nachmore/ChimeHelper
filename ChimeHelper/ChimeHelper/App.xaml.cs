@@ -21,6 +21,8 @@ namespace ChimeHelper
 
       new ChimeHelperTray(TrayIcon);
       ChimeHelperState.Create();
+
+      SettingsWindow.LoadSettings();
     }
 
   }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using static ChimeOutlookHelper.ChimeOutlookHelper;
@@ -88,6 +89,127 @@ namespace ChimeHelper
             }
           );
 
+        }
+      }
+
+      public ICommand StartMeetingMenuCommand
+      {
+        get
+        {
+          return new DelegateCommand(
+            (object parameter) =>
+            {
+              var personalID = Properties.Settings.Default.ChimeBridgePersonalID ?? Properties.Settings.Default.ChimeBridgePersonalizedID;
+              var personalizedID = Properties.Settings.Default.ChimeBridgePersonalizedID ?? personalID;
+
+              if (string.IsNullOrEmpty(personalID) && string.IsNullOrEmpty(personalizedID))
+              {
+                SettingsWindow.CreateAndShow();
+              }
+              else
+              {
+                System.Diagnostics.Process.Start(String.Format(ChimeOutlookHelper.ChimeOutlookHelper.MEETING_URL_FORMAT, personalizedID));
+              }
+            }
+          );
+        }
+      }
+
+      public ICommand ShortChimeStringMenuCommand
+      {
+        get
+        {
+          return new DelegateCommand(
+            (object parameter) =>
+            {
+
+              var personalID = Properties.Settings.Default.ChimeBridgePersonalID;
+              var personalizedID = Properties.Settings.Default.ChimeBridgePersonalizedID;
+
+              if (string.IsNullOrEmpty(personalID) &&
+                  string.IsNullOrEmpty(personalizedID))
+              {
+                SettingsWindow.CreateAndShow();
+              } 
+              else
+              {
+
+                string chimeText;
+
+                if (personalID != null && personalizedID != null)
+                {
+                  chimeText = $"Chime ({personalizedID} / {personalID})";
+                } 
+                else if (personalID != null)
+                {
+                  chimeText = $"Chime ({personalID})";
+                } 
+                else
+                {
+                  chimeText = $"Chime ({personalizedID})";
+                }
+
+                Clipboard.SetText(chimeText);
+              }
+            }
+         );
+        }
+      }
+      public ICommand FullChimeStringMenuCommand
+      {
+        get
+        {
+          return new DelegateCommand(
+          (object parameter) =>
+          {
+            var personalID = Properties.Settings.Default.ChimeBridgePersonalID ?? Properties.Settings.Default.ChimeBridgePersonalizedID;
+            var personalizedID = Properties.Settings.Default.ChimeBridgePersonalizedID ?? personalID;
+
+            if (string.IsNullOrEmpty(personalID) && string.IsNullOrEmpty(personalizedID))
+            {
+              SettingsWindow.CreateAndShow();
+              return;
+            }
+
+            var fullChimeText = 
+$@"You have been invited to an online meeting, powered by Amazon Chime.
+
+1.Click to join the meeting: https://chime.aws/{personalizedID}
+  Meeting ID: {personalizedID}
+  Meeting PIN: {personalID}
+
+2.You can use your computer’s microphone and speakers; however, a headset is recommended.Or, call in using your phone:
+
+  Meeting PIN: {personalID}
+
+  One-click Dial-in (US)    : +1 206 - 462 - 5569,,3795341803#
+  United States Toll - Free : +1 855 - 552 - 4463
+  United States(1)          : +1 206 - 462 - 5569
+  United States(2)          : +1 929 - 432 - 4463
+  Australia Toll-Free(1)    : +61 1800 910 205
+  Australia Toll-Free(2)    : +61 1800 791 104
+  Australia                 : +61 2 8311 0237
+  Singapore Toll-Free       : +65 1800 622 3606
+  Singapore                 : +65 3158 2702
+
+  International: https://chime.aws/dialinnumbers/
+";
+
+            Clipboard.SetText(fullChimeText);
+          }
+         );
+        }
+      }
+      public ICommand SettingsMenuCommand
+      {
+        get
+        {
+          return new DelegateCommand(
+          (object parameter) =>
+          {
+            SettingsWindow.CreateAndShow();
+          }
+         );
         }
       }
 
