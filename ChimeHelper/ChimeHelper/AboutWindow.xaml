@@ -3,12 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ChimeHelper"
         mc:Ignorable="d"
-        Title="About" Height="225" Width="400" Icon="Icons/fan.ico">
+        ResizeMode="NoResize"
+        Title="About" Height="245" Width="400" Icon="Icons/fan.ico">
   <StackPanel>
     <Border Background="#192A38" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="42" VerticalAlignment="Top" Width="574">
-      <TextBlock VerticalAlignment="Center" FontSize="25" Foreground="White" FontWeight="Light" Margin="10,0,0,0">Chime Helper</TextBlock>
+      <StackPanel Orientation="Horizontal">
+        <Image Height="28" Width="28" Source="/Icons/fan.ico" Margin="10,0,0,0"></Image>
+        <TextBlock VerticalAlignment="Center" FontSize="25" Foreground="White" FontWeight="Light" Margin="5,0,0,0">Chime Helper</TextBlock>
+      </StackPanel>
     </Border>
 
     <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
@@ -17,11 +20,13 @@
     </StackPanel>
 
     <TextBlock TextWrapping="Wrap" Margin="10,10,0,0">Simple application to detect Chime meeting pins in your Outlook calendar and give you 1-click access to them.</TextBlock>
-    <TextBlock Margin="10,20,0,0">Source Code:
+    <TextBlock TextWrapping="Wrap" Margin="10,10,0,0">This application is not affiliated with Amazon or Amazon Chime and is provided as-is.</TextBlock>
+    
+    <TextBlock Margin="10,10,0,0">Source Code:
       <Hyperlink NavigateUri="https://github.com/nachmore/AmazonChimeHelper">https://github.com/nachmore/AmazonChimeHelper</Hyperlink>
     </TextBlock>
 
-    <TextBlock HorizontalAlignment="Right" Margin="0,25,5,0">© 2020, Oren Nachman</TextBlock>
+    <TextBlock HorizontalAlignment="Right" Margin="0,10,5,0">© 2020, Oren Nachman</TextBlock>
 
   </StackPanel>
 </Window>
