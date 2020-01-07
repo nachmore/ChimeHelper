@@ -16,6 +16,9 @@ InstallDir "$PROGRAMFILES\Chime Helper"
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
 
+; Set custom branding
+BrandingText "Chime Helper (© Oren Nachman)"
+
 ;--------------------------------
 
 ; Pages
@@ -83,13 +86,36 @@ SectionEnd
 Section "Chime Helper (required)" SecChimeHelper
   SectionIn RO
   
-  ; Since process termination is non-destructive for Chime Helper, just kill it
-  DetailPrint "Shutting down Chime Helper..."
-  KillProcWMI::KillProc "ChimeHelper.exe"
-  
+  DetailPrint "Debug statements are intentional! :)"
+
+  ; Ask Chime Helper to shut down
+  !define SHUT_DOWN "Shutting down Chime Helper..."
+  DetailPrint "${SHUT_DOWN}"
+
+  DetailPrint '${SHUT_DOWN} [DEBUG] opening handle: "Global\nachmore.ChimeHelper.IsRunning"'
+
+  !define EVENT_MODIFY_STATE 0x0002
+
+  System::Call 'kernel32::OpenEventW(i ${EVENT_MODIFY_STATE}, b 0, w "Global\nachmore.ChimeHelper.IsRunning") i .R0 ? e'  
+  Pop $0
+
+  DetailPrint "${SHUT_DOWN} [DEBUG] OpenEventW: $R0 GetLastError: $0"
+
+  System::Call 'kernel32::SetEvent(i $R0) b .R1 ? e'
+  Pop $0
+
+  DetailPrint "${SHUT_DOWN} [DEBUG] Handle: $R0 SetEvent: $R1 GetLastError: $0"
+
+  ; if the return value is 0 then we failed to set the event (Chime Helper is likely not running)
+  ; so don't waste time sleeping
+  IntCmp $R0 0 ContinueInstall
+
   ; Let the process shutdown
-  Sleep 1000
-  
+  DetailPrint "Sleeping to allow Chime Helper to shutdown..."
+  Sleep 5000
+
+  ContinueInstall:
+    
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   
