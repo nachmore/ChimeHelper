@@ -32,24 +32,24 @@ namespace ChimeHelper
     }
 
     /// <summary>
-    /// Monitors a global mutex that can be used to signal this process to exit which
-    /// can be useful for the installer to shut down our process
+    /// Monitors a global event that can be used to signal this process to exit, for example
+    /// during install
     /// </summary>
     private void InitExitEventWaiter()
     {
       // create a rule that allows anybody in the "Users" group to synchronise with us
       var users = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
-      var rule = new EventWaitHandleAccessRule(users, EventWaitHandleRights.Synchronize | EventWaitHandleRights.Modify,
-                                AccessControlType.Allow);
+      var rule = new EventWaitHandleAccessRule(users, EventWaitHandleRights.Synchronize | EventWaitHandleRights.Modify, AccessControlType.Allow);
+      
       var security = new EventWaitHandleSecurity();
       security.AddAccessRule(rule);
-      bool createdNew;
 
-      var ewh = new EventWaitHandle(false, EventResetMode.ManualReset, @"Global\nachmore.ChimeHelper.IsRunning", out createdNew, security);
+      bool createdNew;
+      var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset, @"Global\nachmore.ChimeHelper.IsRunning", out createdNew, security);
 
       new Thread(() =>
       {
-        ewh.WaitOne();
+        eventWaitHandle.WaitOne();
 
         Application.Current.Dispatcher.BeginInvoke(new Action(() =>
         {
