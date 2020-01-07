@@ -28,7 +28,24 @@ namespace ChimeHelper
       public string Subject { get; set; }
       public DateTime StartTime { get; set; }
       public DateTime EndTime { get; set; }
-      public string Pin { get; set; }
+
+
+      private string _pin;
+      public string Pin 
+      {
+        get { return _pin; }
+        set 
+        {
+          if (long.TryParse(value, out long parsedPin))
+          {
+            _pin = parsedPin.ToString("### #### ###");
+          }
+          else
+          {
+            _pin = value;
+          }
+        }
+      }
 
       public ChimeMeetingMenuItem() { }
 
