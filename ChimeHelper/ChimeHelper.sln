@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{BC5F172A-A91D-4009-B8C1-D8DAE3A24750}"
 	ProjectSection(SolutionItems) = preProject
 		InstallScript\ChimeHelperInstaller.nsi = InstallScript\ChimeHelperInstaller.nsi
+		InstallScript\ChimeHelperSetup.exe = InstallScript\ChimeHelperSetup.exe
 	EndProjectSection
 EndProject
 Global
