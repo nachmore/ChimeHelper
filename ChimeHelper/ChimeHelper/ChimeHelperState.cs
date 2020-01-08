@@ -31,6 +31,15 @@ namespace ChimeHelper
     private const int DEFAULT_CHECK_INTERVAL_MIN = 15;
 
     /// <summary>
+    /// The number of minutes to offset the interval since we want to be ready a few minutes
+    /// *before* a meeting's start, as opposed to checking aligned to meeting start times.
+    ///
+    /// For example, interval = 15, offset = 2 -> will check at:
+    /// :58, :13, :28, :43
+    /// </summary>
+    private const int DEFAULT_INTERVAL_OFFSET_MIN = 3;
+
+    /// <summary>
     /// The interval of time after which our current cache of meetings is considered to be stale
     /// Note that there is no actual cache, but it is bound to the control, this mainly controls
     /// showing the loading icon and clearing the UI
@@ -90,7 +99,7 @@ namespace ChimeHelper
 
       _timerState = TimerState.FIRST;
 
-      var initialPeriod = TimerIntervalMinutes - (DateTime.Now.Minute % TimerIntervalMinutes);
+      var initialPeriod = TimerIntervalMinutes  - DEFAULT_INTERVAL_OFFSET_MIN - (DateTime.Now.Minute % TimerIntervalMinutes);
 
       _timer = new Timer(CheckForChimeMeetings, true, 1000, DEFAULT_CHECK_INTERVAL_MIN * 60 * 1000);
 
@@ -111,9 +120,9 @@ namespace ChimeHelper
         }
         else if (_timerState == TimerState.SECOND)
         {
-          // we want to be able to run aligned to the interval boundary (so if it's 15 minutes,
-          // on the :00, :15, :30, :45), so immediately reset the timer so that it triggers regardless
-          // of how long the actual check takes to run
+          // we want to be able to run aligned to the interval boundary - offset (so if it's 15 minutes,
+          // with a 2 minute offset then check on the :58, :13, :28, :43), so immediately reset the
+          // timer so that it triggers regardless of how long the actual check takes to run
 
           Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] Timer Moving to Ongoing");
 
@@ -132,7 +141,7 @@ namespace ChimeHelper
         meetingMenuItems.AddRange(ChimeMeetingMenuItem.Create(meeting));
       }
 
-      App.Current.Dispatcher.Invoke(new Action(() =>
+      App.Current.Dispatcher.BeginInvoke(new Action(() =>
       {
         App.TrayIcon.DataContext = (meetingMenuItems.Count > 0 ? meetingMenuItems : ChimeHelperTray.NO_MEETINGS);
       }));
