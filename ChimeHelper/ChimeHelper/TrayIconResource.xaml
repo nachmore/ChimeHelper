@@ -331,8 +331,8 @@
               <TextBlock VerticalAlignment="Center" FontSize="25" Foreground="White" FontWeight="Light" Margin="5,0,0,0">Chime Helper</TextBlock>
             </StackPanel>
             
-            <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,3,3">
-              <Hyperlink Foreground="White" Command="{Binding StartMeetingMenuCommand}">Start Meeting Now (Personal ID)</Hyperlink>
+            <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="0,0,5,0">
+              <Hyperlink Foreground="White" Command="{Binding StartMeetingMenuCommand}">Meet Now</Hyperlink>
             </TextBlock>
             
           </Grid>
