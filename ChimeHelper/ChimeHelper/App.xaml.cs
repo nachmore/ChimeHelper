@@ -1,5 +1,6 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using System;
+using System.Diagnostics;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
@@ -14,6 +15,8 @@ namespace ChimeHelper
   public partial class App : Application
   {
     public static TaskbarIcon TrayIcon { get; set; }
+
+    private Thread _exitRequestWaiter;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -31,6 +34,13 @@ namespace ChimeHelper
       SettingsWindow.LoadSettings();
     }
 
+    protected override void OnExit(ExitEventArgs e)
+    {
+      base.OnExit(e);
+
+      _exitRequestWaiter?.Interrupt();
+    }
+
     /// <summary>
     /// Monitors a global event that can be used to signal this process to exit, for example
     /// during install
@@ -39,24 +49,41 @@ namespace ChimeHelper
     {
       // create a rule that allows anybody in the "Users" group to synchronise with us
       var users = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
-      var rule = new EventWaitHandleAccessRule(users, EventWaitHandleRights.Synchronize | EventWaitHandleRights.Modify, AccessControlType.Allow);
+      var rule = new EventWaitHandleAccessRule(users, EventWaitHandleRights.FullControl, AccessControlType.Allow);
       
       var security = new EventWaitHandleSecurity();
       security.AddAccessRule(rule);
 
-      bool createdNew;
-      var eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset, @"Global\nachmore.ChimeHelper.IsRunning", out createdNew, security);
+      EventWaitHandle eventWaitHandle;
 
-      new Thread(() =>
+      try
       {
-        eventWaitHandle.WaitOne();
+        eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset, @"Global\nachmore.ChimeHelper.IsRunning", out bool createdNew, security);
+      }
+      catch (Exception e)
+      {
+        Debug.WriteLine("InitExitEventWaiter: " + e);
 
-        Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+        // Windows will sometimes get into a weird state and throw AccessDenied, in these cases ignore the exception and continue to launch
+        // since this can often be when a different ChimeHelper is stuck
+        return;
+      }
+
+      _exitRequestWaiter = new Thread(() =>
         {
-          Application.Current.Shutdown();
-        }));
-      }).Start();
+          try
+          {
+            eventWaitHandle.WaitOne();
 
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+              Application.Current.Shutdown();
+            }));
+          }
+          catch (ThreadInterruptedException) { } // expected while exiting
+        });
+
+      _exitRequestWaiter.Start();
     }
 
   }
