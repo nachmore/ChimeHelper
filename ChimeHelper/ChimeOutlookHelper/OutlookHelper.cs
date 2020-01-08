@@ -13,7 +13,7 @@ namespace ChimeOutlookHelper
 
     private const int DEFAULT_SEARCH_HOURS = 1;
 
-    public static Outlook.MAPIFolder GetCalendar()
+    public static Outlook.Folder GetCalendar()
     {
       var outlook = new Outlook.Application();
       var stores = outlook.Session.Stores;
@@ -23,7 +23,7 @@ namespace ChimeOutlookHelper
         try
         {
 
-          Outlook.MAPIFolder folder = store.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
+          var folder = (Outlook.Folder)store.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
           System.Diagnostics.Debug.WriteLine(folder.Name);
 
           return folder;
@@ -38,7 +38,7 @@ namespace ChimeOutlookHelper
       throw new InvalidOperationException("Couldn't find a Calendar in the current Outlook installation");
     }
 
-    public static Outlook.Items GetAppointmentsAroundNow(Outlook.MAPIFolder calendar, int hours = DEFAULT_SEARCH_HOURS)
+    public static Outlook.Items GetAppointmentsAroundNow(Outlook.Folder calendar, int hours = DEFAULT_SEARCH_HOURS)
     {
       var now = DateTime.Now;
 
@@ -52,7 +52,7 @@ namespace ChimeOutlookHelper
       return GetAppointmentsInRange(calendar, start, end);
     }
 
-    public static Outlook.Items GetAppointmentsInRange(Outlook.MAPIFolder folder, DateTime start, DateTime end, bool includeRecurrences = true)
+    public static Outlook.Items GetAppointmentsInRange(Outlook.Folder folder, DateTime start, DateTime end, bool includeRecurrences = true)
     {
       var filter = $"([Start] >= '{start.ToString("g")}' AND [Start] <= '{end.ToString("g")}') OR ([Start] < '{start.ToString("g")}' AND [End] >= '{start.ToString("g")}')";
 
