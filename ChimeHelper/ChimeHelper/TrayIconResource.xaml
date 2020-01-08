@@ -425,7 +425,7 @@
           
         </DataGrid>
         <TextBlock MaxWidth="450" Background="White" Padding="10,10,10,20" TextWrapping="Wrap" Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibilityConverter}}">
-            There are no current meetings with Chime pins in your Outlook calendar that we could detect. By default we only consider meetings from a full hour ago to a full hour in the future, for example at 10:05 am we would look for meetings that start between 9am to 12pm.
+            There are no current meetings with Chime pins in your Outlook calendar that we could detect. By default we only consider meetings from a full hour ago to a full hour in the future, for example at 10:05 am we would look for meetings that are in progress between 9am to 12pm.
             <LineBreak/>
             <LineBreak/>
             If you believe that we've missed something, please <chxaml:HyperlinkAuto NavigateUri="https://github.com/nachmore/AmazonChimeHelper/issues/new">open an Issue</chxaml:HyperlinkAuto> with some example text.

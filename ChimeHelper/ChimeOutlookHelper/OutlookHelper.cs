@@ -54,7 +54,7 @@ namespace ChimeOutlookHelper
 
     public static Outlook.Items GetAppointmentsInRange(Outlook.MAPIFolder folder, DateTime start, DateTime end, bool includeRecurrences = true)
     {
-      var filter = $"[Start] >= '{start.ToString("g")}' AND [Start] <= '{end.ToString("g")}'";
+      var filter = $"([Start] >= '{start.ToString("g")}' AND [Start] <= '{end.ToString("g")}') OR ([Start] < '{start.ToString("g")}' AND [End] >= '{start.ToString("g")}')";
 
       var items = folder.Items;
       items.IncludeRecurrences = includeRecurrences;
