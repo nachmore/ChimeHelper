@@ -443,6 +443,7 @@
         <MenuItem Header="Copy Full Chime String" Command="{Binding FullChimeStringMenuCommand}"/>
         <Separator/>
         <MenuItem Header="Settings" Command="{Binding SettingsMenuCommand}"/>
+        <MenuItem Header="Check For Meetings Now" Command="{Binding CheckNowMenuCommand}"/>
         <Separator/>
         <MenuItem Header="About" Command="{Binding AboutMenuCommand}"/>
         <MenuItem Header="Exit" Command="{Binding ExitMenuCommand}"/>
