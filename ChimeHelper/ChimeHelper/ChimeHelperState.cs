@@ -18,12 +18,15 @@ namespace ChimeHelper
     #region Singleton
 
     private static ChimeHelperState _instance;
-    public static ChimeHelperState Create()
+    public static ChimeHelperState Instance
     {
-      if (_instance == null)
-        _instance = new ChimeHelperState();
+      get
+      {
+        if (_instance == null)
+          _instance = new ChimeHelperState();
 
-      return _instance;
+        return _instance;
+      }
     }
 
     #endregion
@@ -51,18 +54,26 @@ namespace ChimeHelper
     private Timer _timer;
     private DateTime _lastCheck;
 
-    private enum TimerState { FIRST, SECOND, ONGOING }
+    private enum TimerState { STOPPED, FIRST, SECOND, ONGOING }
 
     // this could be passes as stateInfo to the Timer, but is useful for debugging
     private TimerState _timerState;
 
-    private ChimeHelperState(int timerIntervalMinutes = DEFAULT_CHECK_INTERVAL_MIN) 
+    private ChimeHelperState(int timerIntervalMinutes = DEFAULT_CHECK_INTERVAL_MIN)
     {
       TimerIntervalMinutes = timerIntervalMinutes;
+    }
 
-      StartMeetingTimer();
+    public void StartState()
+    {
+      Debug.Assert(_timerState == TimerState.STOPPED);
 
-      Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
+      if (_timerState == TimerState.STOPPED)
+      {
+        StartMeetingTimer();
+
+        Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
+      }
     }
 
     private void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
@@ -90,7 +101,7 @@ namespace ChimeHelper
       }
     }
 
-    public void StartMeetingTimer()
+    private void StartMeetingTimer()
     {
       // timer runs as:
       // 1. 1st run happens after the first second
@@ -106,7 +117,15 @@ namespace ChimeHelper
       Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] Spawning Timer with period: " + (DEFAULT_CHECK_INTERVAL_MIN * 60 * 1000));
     }
 
-    public void CheckForChimeMeetings(object stateInfo)
+    public async void CheckForChimeMeetingsAsync()
+    {
+      await Task.Run(() =>
+      {
+        CheckForChimeMeetings(null);
+      });
+    }
+
+    private void CheckForChimeMeetings(object stateInfo)
     {
       Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] CheckForChimeMeetings() called");
 
