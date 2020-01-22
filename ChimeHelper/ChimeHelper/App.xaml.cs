@@ -29,7 +29,7 @@ namespace ChimeHelper
       TrayIcon = (TaskbarIcon)FindResource("ChimeHelperTaskbarIcon");
 
       new ChimeHelperTray(TrayIcon);
-      ChimeHelperState.Create();
+      ChimeHelperState.Instance.StartState();
 
       SettingsWindow.LoadSettings();
     }

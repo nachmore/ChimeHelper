@@ -23,6 +23,7 @@ namespace ChimeHelper
     #region Singleton
     public static SettingsWindow _settingsWindow;
 
+    // Not using "Instance" since this Singleton is more of an action
     public static void CreateAndShow()
     {
       if (_settingsWindow == null || _settingsWindow.IsLoaded == false)
