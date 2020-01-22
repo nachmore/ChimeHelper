@@ -119,8 +119,15 @@ namespace ChimeHelper
 
     public async void CheckForChimeMeetingsAsync()
     {
+
       await Task.Run(() =>
       {
+        // TODO: this really needs to be its own function / reevaluate this being part of state
+        App.Current.Dispatcher.Invoke(new Action(() =>
+        {
+          App.TrayIcon.DataContext = ChimeHelperTray.MEETINGS_LOADING;
+        }));
+
         CheckForChimeMeetings(null);
       });
     }

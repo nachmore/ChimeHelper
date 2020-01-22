@@ -230,6 +230,19 @@ $@"You have been invited to an online meeting, powered by Amazon Chime.
         }
       }
 
+      public ICommand CheckNowMenuCommand
+      {
+        get
+        {
+          return new DelegateCommand(
+          (object parameter) =>
+          {
+            ChimeHelperState.Instance.CheckForChimeMeetingsAsync();
+          }
+         );
+        }
+      }
+
       public ICommand AboutMenuCommand
       {
         get
