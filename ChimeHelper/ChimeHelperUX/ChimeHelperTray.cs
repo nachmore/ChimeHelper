@@ -101,7 +101,8 @@ namespace ChimeHelperUX
 
                 // clears the actual selected item, allows the same item to be selected again
                 datagrid.UnselectAll();
-                System.Diagnostics.Process.Start(String.Format(ChimeOutlookHelper.ChimeOutlookHelper.MEETING_URL_FORMAT, meeting.Pin));
+
+                ChimeHelper.Chime.Join(meeting.Pin);
               }
             }
           );
@@ -125,7 +126,7 @@ namespace ChimeHelperUX
               }
               else
               {
-                System.Diagnostics.Process.Start(String.Format(ChimeOutlookHelper.ChimeOutlookHelper.MEETING_URL_FORMAT, personalizedID));
+                ChimeHelper.Chime.Join(personalizedID);
               }
             }
           );

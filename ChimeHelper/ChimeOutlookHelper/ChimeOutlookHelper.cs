@@ -9,8 +9,6 @@ namespace ChimeOutlookHelper
 {
   public class ChimeOutlookHelper
   {
-    public const string MEETING_URL_FORMAT = "chime://meeting/?pin={0}";
-
     public struct ChimeMeeting
     {
       public string Subject { get; set; }

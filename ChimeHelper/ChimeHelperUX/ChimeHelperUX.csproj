@@ -255,6 +255,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ChimeHelper\ChimeHelper.csproj">
+      <Project>{e2166e31-b5dd-4526-a544-7696b7a7e77f}</Project>
+      <Name>ChimeHelper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ChimeOutlookHelper\ChimeOutlookHelper.csproj">
       <Project>{cbcfbe2f-239f-4f18-a4fc-a59c44ecbd60}</Project>
       <Name>ChimeOutlookHelper</Name>
