@@ -48,5 +48,11 @@
     <Compile Include="OutlookHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ChimeHelper\ChimeHelper.csproj">
+      <Project>{e2166e31-b5dd-4526-a544-7696b7a7e77f}</Project>
+      <Name>ChimeHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
