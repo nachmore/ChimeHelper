@@ -22,7 +22,7 @@ BrandingText "Chime Helper (© Oren Nachman)"
 ;--------------------------------
 
 ; Pages
-  !define MUI_ICON "..\ChimeHelper\Icons\fan.ico"
+  !define MUI_ICON "..\ChimeHelperUX\Icons\fan.ico"
 
   !define MUI_COMPONENTSPAGE_TEXT_TOP "Select the Components you want to install and uncheck the ones you you do not want to install. Click next to continue."
   !define MUI_COMPONENTSPAGE_TEXT_DESCRIPTION_TITLE "Description"
@@ -120,10 +120,10 @@ Section "Chime Helper (required)" SecChimeHelper
   SetOutPath $INSTDIR
   
   ; Put file there
-  File "..\ChimeHelper\bin\Release\ChimeHelper.exe"	
-  File "..\ChimeHelper\bin\Release\ChimeHelper.exe.config"
-  File "..\ChimeHelper\bin\Release\*.dll"
-  File "..\ChimeHelper\bin\Release\*.xml"
+  File "..\ChimeHelperUX\bin\Release\ChimeHelper.exe"	
+  File "..\ChimeHelperUX\bin\Release\ChimeHelper.exe.config"
+  File "..\ChimeHelperUX\bin\Release\*.dll"
+  File "..\ChimeHelperUX\bin\Release\*.xml"
   File "..\..\LICENSE"
   File "..\..\OTHER_LICENSES"
 
