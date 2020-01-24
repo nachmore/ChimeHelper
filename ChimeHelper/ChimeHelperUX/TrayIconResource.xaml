@@ -438,6 +438,7 @@
       <ContextMenu
             Background="#192a38" Foreground="White" Margin="0" BorderBrush="#007980" BorderThickness="1" ItemTemplate="{StaticResource MenuItemTemplate}" UsesItemContainerTemplate="True">
         <MenuItem Header="Start Meeting (Personal ID)" Command="{Binding StartMeetingMenuCommand}"/>
+        <MenuItem Header="Join Meeting" Command="{Binding ShowJoinMeetingDialogMenuCommand}"/>
         <Separator/>
         <MenuItem Header="Copy Short Chime String" Command="{Binding ShortChimeStringMenuCommand}"/>
         <MenuItem Header="Copy Full Chime String" Command="{Binding FullChimeStringMenuCommand}"/>
