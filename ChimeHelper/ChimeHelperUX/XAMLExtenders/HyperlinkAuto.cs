@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 
-namespace ChimeHelper.XAMLExtenders
+namespace ChimeHelperUX.XAMLExtenders
 {
   class HyperlinkAuto : Hyperlink
   {

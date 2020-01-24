@@ -6,7 +6,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Windows;
 
-namespace ChimeHelper
+namespace ChimeHelperUX
 {
 
   /// <summary>

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace ChimeHelper.XAMLExtenders
+namespace ChimeHelperUX.XAMLExtenders
 {
   /// <summary>
   /// Signature based on https://docs.microsoft.com/en-us/dotnet/api/microsoft.toolkit.uwp.ui.converters.booltoobjectconverter?view=win-comm-toolkit-dotnet-stable&viewFallbackFrom=uwp-toolkit-dotnet
