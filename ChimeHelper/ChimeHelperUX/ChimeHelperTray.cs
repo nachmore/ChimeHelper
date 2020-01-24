@@ -133,6 +133,19 @@ namespace ChimeHelperUX
         }
       }
 
+      public ICommand ShowJoinMeetingDialogMenuCommand
+      {
+        get
+        {
+          return new DelegateCommand(
+            (object paramater) =>
+            {
+              JoinMeetingDialog.CreateAndShow();
+            }
+          );
+        }
+      }
+
       public ICommand ShortChimeStringMenuCommand
       {
         get
