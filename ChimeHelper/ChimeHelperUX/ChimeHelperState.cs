@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static ChimeHelper.ChimeHelperTray;
+using static ChimeHelperUX.ChimeHelperTray;
 
-namespace ChimeHelper
+namespace ChimeHelperUX
 {
   /// <summary>
   /// Manages state for the ChimeHelper application, including the Tray and timer for detecting meetings

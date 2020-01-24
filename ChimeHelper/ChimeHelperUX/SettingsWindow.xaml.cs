@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace ChimeHelper
+namespace ChimeHelperUX
 {
   /// <summary>
   /// Interaction logic for Settings.xaml

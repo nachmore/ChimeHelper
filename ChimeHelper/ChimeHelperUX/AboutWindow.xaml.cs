@@ -8,7 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static ChimeOutlookHelper.ChimeOutlookHelper;
 
-namespace ChimeHelper
+namespace ChimeHelperUX
 {
 
   public partial class AboutWindow : Window

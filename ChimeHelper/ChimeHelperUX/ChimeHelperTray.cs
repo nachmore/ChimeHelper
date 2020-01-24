@@ -10,7 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using static ChimeOutlookHelper.ChimeOutlookHelper;
 
-namespace ChimeHelper
+namespace ChimeHelperUX
 {
   class ChimeHelperTray
   {

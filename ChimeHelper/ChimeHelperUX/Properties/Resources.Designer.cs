@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ChimeHelper.Properties
+namespace ChimeHelperUX.Properties
 {
 
 
