@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using static ChimeOutlookHelper.ChimeOutlookHelper;
 
@@ -103,10 +104,13 @@ namespace ChimeHelperUX
                 datagrid.UnselectAll();
 
                 ChimeHelper.Chime.Join(meeting.Pin);
+
+                // hide the popup on meeting selection
+                var popup = datagrid.FindAncestor<Popup>();
+                popup.IsOpen = false;
               }
             }
           );
-
         }
       }
 
@@ -117,6 +121,12 @@ namespace ChimeHelperUX
           return new DelegateCommand(
             (object parameter) =>
             {
+              // if this came from the popup then close the popup
+              if (parameter is Popup)
+              {
+                ((Popup)parameter).IsOpen = false;
+              }
+
               var personalID = Properties.Settings.Default.ChimeBridgePersonalID ?? Properties.Settings.Default.ChimeBridgePersonalizedID;
               var personalizedID = Properties.Settings.Default.ChimeBridgePersonalizedID ?? personalID;
 

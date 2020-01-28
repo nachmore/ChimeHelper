@@ -332,7 +332,8 @@
             </StackPanel>
             
             <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="0,0,5,0">
-              <Hyperlink Foreground="White" Command="{Binding StartMeetingMenuCommand}">Meet Now</Hyperlink>
+              <Hyperlink Foreground="White" Command="{Binding StartMeetingMenuCommand}" 
+                         CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Popup}}">Meet Now</Hyperlink>
             </TextBlock>
             
           </Grid>
