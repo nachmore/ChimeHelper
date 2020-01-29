@@ -38,7 +38,7 @@ namespace ChimeOutlookHelper
       throw new InvalidOperationException("Couldn't find a Calendar in the current Outlook installation");
     }
 
-    public static Outlook.Items GetAppointmentsAroundNow(Outlook.Folder calendar, int hours = DEFAULT_SEARCH_HOURS)
+    public static List<Outlook.AppointmentItem> GetAppointmentsAroundNow(Outlook.Folder calendar, int hours = DEFAULT_SEARCH_HOURS)
     {
       var now = DateTime.Now;
 
@@ -52,15 +52,44 @@ namespace ChimeOutlookHelper
       return GetAppointmentsInRange(calendar, start, end);
     }
 
-    public static Outlook.Items GetAppointmentsInRange(Outlook.Folder folder, DateTime start, DateTime end, bool includeRecurrences = true)
+    public static List<Outlook.AppointmentItem> GetAppointmentsInRange(Outlook.Folder folder, DateTime start, DateTime end, bool includeRecurrences = true)
     {
-      var filter = $"([Start] >= '{start.ToString("g")}' AND [Start] <= '{end.ToString("g")}') OR ([Start] < '{start.ToString("g")}' AND [End] >= '{start.ToString("g")}')";
+      // we originally combined the filters with an "OR" but it would seemingly miss some random meetings for no apparent reason
+      // explored whether or not there was API caching but couldn't find any. Splitting it out into two queries seems to solve the 
+      // issue, even if the code is a little more weird.
+
+      // find all meetings that start within the period (regardless of when they end specifically)
+      var filter = $"[Start] >= '{start.ToString("g")}' AND [Start] <= '{end.ToString("g")}'";
+
+      var rv = RestrictItems(folder, filter, includeRecurrences);
+
+      // find meetings that are in-progress during the period (for example, all day events that start before the period but end
+      // during or after it
+      filter = $"[Start] < '{start.ToString("g")}' AND [End] >= '{start.ToString("g")}'";
+
+      rv.AddRange(RestrictItems(folder, filter, includeRecurrences));
+
+      return rv;
+    }
+
+    public static List<Outlook.AppointmentItem> RestrictItems(Outlook.Folder folder, string filter, bool includeRecurrences)
+    {
+      var rv = new List<Outlook.AppointmentItem>();
 
       var items = folder.Items;
       items.IncludeRecurrences = includeRecurrences;
       items.Sort("[Start]", Type.Missing);
 
-      return items.Restrict(filter);
+      var restricted = items.Restrict(filter);
+
+      foreach (Outlook.AppointmentItem item in restricted)
+      {
+        rv.Add(item);
+
+        Debug.WriteLine("++: " + item.Start + " -> " + item.End + ": " + item.Subject);
+      }
+
+      return rv;
     }
 
   }
