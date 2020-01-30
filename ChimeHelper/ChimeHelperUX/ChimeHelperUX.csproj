@@ -233,6 +233,7 @@
     <Compile Include="SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UXHelpers\WindowPositioner.cs" />
     <Compile Include="XAMLExtenders\BoolToObjectConverter.cs" />
     <Compile Include="XAMLExtenders\HyperlinkAuto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
