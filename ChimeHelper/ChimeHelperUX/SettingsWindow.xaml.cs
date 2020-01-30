@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChimeHelperUX.UXHelpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,6 +32,8 @@ namespace ChimeHelperUX
 
       _settingsWindow.Show();
       _settingsWindow.Activate();
+
+      WindowPositioner.MoveToMouse(_settingsWindow);
     }
     #endregion
 

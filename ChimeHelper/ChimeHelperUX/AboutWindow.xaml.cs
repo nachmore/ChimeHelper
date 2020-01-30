@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.PlatformUI;
+﻿using ChimeHelperUX.UXHelpers;
+using Microsoft.VisualStudio.PlatformUI;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -22,6 +23,8 @@ namespace ChimeHelperUX
 
       _aboutWindow.Show();
       _aboutWindow.Activate();
+
+      WindowPositioner.MoveToMouse(_aboutWindow);
     }
 
     public string Version { get; set; }
