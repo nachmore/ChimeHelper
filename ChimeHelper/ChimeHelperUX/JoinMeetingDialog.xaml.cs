@@ -1,4 +1,5 @@
 ﻿using ChimeHelper;
+using ChimeHelperUX.UXHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,8 @@ namespace ChimeHelperUX
 
       _instance.Show();
       _instance.Activate();
-      _instance.MoveToMouse(leftOffset: 50, topOffset: 50);
+      
+      WindowPositioner.MoveToMouse(_instance, leftOffset: 50, topOffset: 50);
 
       _instance.GetPinsFromClipboard();
     }
@@ -42,32 +44,6 @@ namespace ChimeHelperUX
     public JoinMeetingDialog()
     {
       InitializeComponent();
-    }
-
-    private void MoveToMouse(int leftOffset = 0, int topOffset = 0, int offscreenBuffer = 20)
-    {
-      var transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
-      var mouse = transform.Transform(GetMousePosition());
-      Left = mouse.X - ActualWidth + leftOffset;
-      Top = mouse.Y - ActualHeight + topOffset;
-
-      if (Left < SystemParameters.VirtualScreenLeft)
-        Left = SystemParameters.VirtualScreenLeft + offscreenBuffer;
-
-      if (Left + Width > SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth)
-        Left = SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth - Width - offscreenBuffer;
-
-      if (Top < SystemParameters.VirtualScreenTop)
-        Top = SystemParameters.VirtualScreenTop;
-
-      if (Top + Height > SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight)
-        Top = SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight - Height - offscreenBuffer;
-    }
-
-    public System.Windows.Point GetMousePosition()
-    {
-      System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;
-      return new System.Windows.Point(point.X, point.Y);
     }
 
     private void GetPinsFromClipboard()
