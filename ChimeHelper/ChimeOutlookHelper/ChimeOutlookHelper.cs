@@ -4,6 +4,7 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 using Microsoft.Office.Interop.Outlook;
 using System.Diagnostics;
 using ChimeHelper;
+using System.Linq;
 
 namespace ChimeOutlookHelper
 {
@@ -43,7 +44,7 @@ namespace ChimeOutlookHelper
         }
       }
 
-      return meetings;
+      return meetings.OrderBy(m => m.StartTime).ToList();
     }
 
     private static HashSet<string> GetPins(AppointmentItem appointment)
