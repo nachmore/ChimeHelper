@@ -31,12 +31,12 @@ namespace ChimeHelper
 
       // find chime pin as whole number
 
-      var re = new Regex(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s?\d[\d ]{9,}", RegexOptions.Multiline);
+      var re = new Regex(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s*\d[\d ]{9,}", RegexOptions.Multiline);
       var matches = re.Matches(text);
 
       foreach (Match match in matches)
       {
-        rv.Add(match.Value.Replace(" ", ""));
+        rv.Add(match.Value.Trim().Replace(" ", ""));
       }
 
       return rv;
