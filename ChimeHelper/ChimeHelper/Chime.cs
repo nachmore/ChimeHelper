@@ -24,22 +24,7 @@ namespace ChimeHelper
     /// <returns></returns>
     private static List<string> GetFreeformPinsFromText(string text)
     {
-      var rv = new List<string>();
-
-      if (string.IsNullOrEmpty(text))
-        return rv;
-
-      // find chime pin as whole number
-
-      var re = new Regex(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s*\d[\d ]{9,}", RegexOptions.Multiline);
-      var matches = re.Matches(text);
-
-      foreach (Match match in matches)
-      {
-        rv.Add(match.Value.Trim().Replace(" ", ""));
-      }
-
-      return rv;
+      return GetRegexMatches(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s*\d[\d ]{9,}", text);
     }
 
     /// <summary>
@@ -52,26 +37,46 @@ namespace ChimeHelper
     /// <returns></returns>
     public static List<string> GetPinsFromText(string text)
     {
-      var rv = new List<string>();
-
-      if (string.IsNullOrEmpty(text))
-        return rv;
-
-      // Chime is currently only English, but I have to assume that that will change in the future
-
-      // try to find an ID in a URL
-      var re = new Regex(@"chime.aws/(\d{9,})", RegexOptions.Multiline);
-      var matches = re.Matches(text);
-
-      foreach (Match match in matches)
-      {
-        rv.Add(match.Groups[1].Value);
-      }
+      var rv = GetRegexMatches(@"chime.aws/(\d{9,})", text);
 
       // if we couldn't find any URLs try more coarse matching
       if (rv.Count == 0)
       {
         rv = GetFreeformPinsFromText(text);
+      }
+
+      return rv;
+    }
+
+    /// <summary>
+    /// Retrieves pins from the list of attendees.
+    /// 
+    /// i.e. expicitly looks for pin+XXXXXXXXX@chime.aws
+    /// 
+    /// Note: the reason we don't use freeform search is because that ignores numbers with +
+    ///       to avoid capturing international phone numbers
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public static List<string> GetPinsFromAttendees(string text)
+    {
+      return GetRegexMatches(@"pin\+(\d{9,})", text);
+    }
+
+    private static List<String> GetRegexMatches(string regex, string target)
+    {
+      var rv = new List<string>();
+
+      if (string.IsNullOrEmpty(target))
+        return rv;
+
+      // try to find an ID in a URL
+      var re = new Regex(regex, RegexOptions.Multiline);
+      var matches = re.Matches(target);
+
+      foreach (Match match in matches)
+      {
+        rv.Add(match.Groups[1].Value);
       }
 
       return rv;
