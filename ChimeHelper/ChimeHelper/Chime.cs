@@ -24,7 +24,17 @@ namespace ChimeHelper
     /// <returns></returns>
     private static List<string> GetFreeformPinsFromText(string text)
     {
-      return GetRegexMatches(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s*\d[\d ]{9,}", text);
+      var rv = GetRegexMatches(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s*\d[\d ]{9,}", text);
+
+      if (rv.Count == 0)
+      {
+        // if we really haven't been able to find anything yet, then last ditch attempt to
+        // find personal IDs by looking for a single word (with special characters) after
+        // "Chime: " (ignores case)
+        rv = GetRegexMatches(@"Chime:\s*(\S+)\b", text);
+      }
+
+      return rv;
     }
 
     /// <summary>
@@ -71,12 +81,17 @@ namespace ChimeHelper
         return rv;
 
       // try to find an ID in a URL
-      var re = new Regex(regex, RegexOptions.Multiline);
+      var re = new Regex(regex, RegexOptions.Multiline | RegexOptions.IgnoreCase);
       var matches = re.Matches(target);
 
       foreach (Match match in matches)
       {
-        rv.Add(match.Groups[1].Value);
+        var matchValue = match.Groups[1].Value;
+
+        if (!string.IsNullOrWhiteSpace(matchValue))
+        {
+          rv.Add(match.Groups[1].Value);
+        }
       }
 
       return rv;
