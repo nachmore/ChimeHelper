@@ -24,7 +24,7 @@ namespace ChimeHelper
     /// <returns></returns>
     private static List<string> GetFreeformPinsFromText(string text)
     {
-      var rv = GetRegexMatches(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s*\d[\d ]{9,}", text);
+      var rv = GetRegexMatches(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s*(\d[\d ]{9,})", text);
 
       if (rv.Count == 0)
       {
@@ -90,7 +90,9 @@ namespace ChimeHelper
 
         if (!string.IsNullOrWhiteSpace(matchValue))
         {
-          rv.Add(match.Groups[1].Value);
+          // strip out all whitespace in order to help with dupe matching due to people
+          // putting whitespaces in different places
+          rv.Add(matchValue.Replace(" ", ""));
         }
       }
 
