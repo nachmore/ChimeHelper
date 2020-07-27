@@ -39,7 +39,11 @@ namespace ChimeHelperUX
         {
           if (long.TryParse(value, out long parsedPin))
           {
-            _pin = parsedPin.ToString("### #### ###");
+            // we convert the pin to a number in order to parse it out nicely, but if there
+            // are leading zeros (0) we need to add them back in since they will be stripped 
+            // out by the conversion, we do this by padding to the size of the original number
+            // + the 2 extra spaces that we've added.
+            _pin = parsedPin.ToString("### #### ###").PadLeft(value.Length + 2, '0');
           }
           else
           {
