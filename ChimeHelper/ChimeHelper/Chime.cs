@@ -24,7 +24,7 @@ namespace ChimeHelper
     /// <returns></returns>
     private static List<string> GetFreeformPinsFromText(string text)
     {
-      var rv = GetRegexMatches(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s*(\d[\d ]{9,})", text);
+      var rv = GetRegexMatches(@"(?<!https://(?!chime)+\S+)(?<![\+\d\s]+)\s*(\d[\d ]{9,})\b", text);
 
       if (rv.Count == 0)
       {
@@ -47,7 +47,7 @@ namespace ChimeHelper
     /// <returns></returns>
     public static List<string> GetPinsFromText(string text)
     {
-      var rv = GetRegexMatches(@"chime.aws/(\d{9,})", text);
+      var rv = GetRegexMatches(@"chime.aws/(\d{9,})\b", text);
 
       // if we couldn't find any URLs try more coarse matching
       if (rv.Count == 0)
