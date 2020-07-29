@@ -20,27 +20,31 @@ namespace ChimeOutlookHelper
 
     public static List<ChimeMeeting> GetMeetings()
     {
-      var calendar = OutlookHelper.GetCalendar();
-
-      var appointments = OutlookHelper.GetAppointmentsAroundNow(calendar);
-
       var meetings = new List<ChimeMeeting>();
+      var calendars = OutlookHelper.GetCalendars();
 
-      foreach (Outlook.AppointmentItem appointment in appointments)
+      foreach (var calendar in calendars)
       {
-        var pins = GetPins(appointment);
+        var appointments = OutlookHelper.GetAppointmentsAroundNow(calendar);
 
-        if (pins.Count > 0)
+        foreach (Outlook.AppointmentItem appointment in appointments)
         {
-          meetings.Add(
-            new ChimeMeeting()
-            {
-              Subject = appointment.Subject,
-              StartTime = appointment.Start,
-              EndTime = appointment.End,
-              Pins = new List<string>(pins)
-            }
-          );
+          // TODO (if needed): GetPins() will collapse duplicate pins for a specific meeting
+          //                   but we may need to collapse duplicate meetings across calendars
+          var pins = GetPins(appointment);
+
+          if (pins.Count > 0)
+          {
+            meetings.Add(
+              new ChimeMeeting()
+              {
+                Subject = appointment.Subject,
+                StartTime = appointment.Start,
+                EndTime = appointment.End,
+                Pins = new List<string>(pins)
+              }
+            );
+          }
         }
       }
 

@@ -13,10 +13,12 @@ namespace ChimeOutlookHelper
 
     private const int DEFAULT_SEARCH_HOURS = 1;
 
-    public static Outlook.Folder GetCalendar()
+    public static List<Outlook.Folder> GetCalendars()
     {
       var outlook = new Outlook.Application();
       var stores = outlook.Session.Stores;
+
+      var folders = new List<Outlook.Folder>();
 
       foreach (Outlook.Store store in stores)
       {
@@ -26,7 +28,7 @@ namespace ChimeOutlookHelper
           var folder = (Outlook.Folder)store.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
           System.Diagnostics.Debug.WriteLine(folder.Name);
 
-          return folder;
+          folders.Add(folder);
         }
         catch (Exception e)
         {
@@ -34,6 +36,9 @@ namespace ChimeOutlookHelper
           Debug.WriteLine("Failed to get Calendar:\n" + e);
         }
       }
+
+      if (folders.Count > 0)
+        return folders;
 
       throw new InvalidOperationException("Couldn't find a Calendar in the current Outlook installation");
     }
