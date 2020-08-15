@@ -24,6 +24,10 @@ namespace ChimeOutlookHelper
       {
         try
         {
+          // ignore public folders (causes slow Exchange calls, and we don't have a use case
+          // for interactions with those)
+          if (store.ExchangeStoreType == Outlook.OlExchangeStoreType.olExchangePublicFolder)
+            continue;
 
           var folder = (Outlook.Folder)store.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
           System.Diagnostics.Debug.WriteLine(folder.Name);
