@@ -49,16 +49,25 @@ namespace ChimeOutlookHelper
 
     public static List<Outlook.AppointmentItem> GetAppointmentsAroundNow(Outlook.Folder calendar, int hours = DEFAULT_SEARCH_HOURS)
     {
-      var now = DateTime.Now;
+      try
+      {
+        var now = DateTime.Now;
 
-      // align to the top of the hour since most meetings are aligned to the hour boundary
-      var start = now.Subtract(new TimeSpan(hours, now.Minute, 0));
+        // align to the top of the hour since most meetings are aligned to the hour boundary
+        var start = now.Subtract(new TimeSpan(hours, now.Minute, 0));
 
-      // ignore the current hour (so the buffer applies back and forward equally)
-      // don't worry about seconds, as :00 will still match
-      var end = now.Add(new TimeSpan(hours, 60 - now.Minute, 0));
+        // ignore the current hour (so the buffer applies back and forward equally)
+        // don't worry about seconds, as :00 will still match
+        var end = now.Add(new TimeSpan(hours, 60 - now.Minute, 0));
 
-      return GetAppointmentsInRange(calendar, start, end);
+        return GetAppointmentsInRange(calendar, start, end);
+      }
+      catch (Exception e)
+      {
+        Debug.WriteLine($"Swallowed Exception in GetAppointmentsAroundNow: {e}");
+
+        return null;
+      }
     }
 
     public static List<Outlook.AppointmentItem> GetAppointmentsInRange(Outlook.Folder folder, DateTime start, DateTime end, bool includeRecurrences = true)
