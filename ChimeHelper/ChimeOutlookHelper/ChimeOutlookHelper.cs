@@ -27,6 +27,9 @@ namespace ChimeOutlookHelper
       {
         var appointments = OutlookHelper.GetAppointmentsAroundNow(calendar);
 
+        if (appointments == null)
+          continue;
+
         foreach (Outlook.AppointmentItem appointment in appointments)
         {
           // TODO (if needed): GetPins() will collapse duplicate pins for a specific meeting
