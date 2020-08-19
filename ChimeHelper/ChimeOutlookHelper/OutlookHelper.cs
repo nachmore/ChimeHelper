@@ -22,6 +22,10 @@ namespace ChimeOutlookHelper
 
       foreach (Outlook.Store store in stores)
       {
+        // amazingly this is possible...
+        if (store == null)
+          continue;
+
         try
         {
           // ignore public folders (causes slow Exchange calls, and we don't have a use case
@@ -36,7 +40,7 @@ namespace ChimeOutlookHelper
         }
         catch (Exception e)
         {
-          // Not every root folder has a calendar (for example, Public folders), so this exceptionc can be ignored
+          // Not every root folder has a calendar (for example, Public folders), so this exception can be ignored
           Debug.WriteLine("Failed to get Calendar:\n" + e);
         }
       }
