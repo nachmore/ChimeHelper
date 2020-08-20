@@ -20,14 +20,19 @@ namespace ChimeOutlookHelper
 
       var folders = new List<Outlook.Folder>();
 
-      foreach (Outlook.Store store in stores)
+      // foreach on COM objects can sometimes get into weird states when encountering
+      // a corrupt pst,  where null objects repeat themselves, and a foreach goes into
+      // an infinite loop, so prefer traditional for
+      for (int i = 0; i < stores.Count; i++)
       {
-        // amazingly this is possible...
-        if (store == null)
-          continue;
+        Outlook.Store store = null;
 
         try
         {
+          // this is in the try since sometimes COM will freak out and throw
+          // IndexOutOfRangeException even though we're < Count (corrupt pst situation)
+          store = stores[i];
+
           // ignore public folders (causes slow Exchange calls, and we don't have a use case
           // for interactions with those)
           if (store.ExchangeStoreType == Outlook.OlExchangeStoreType.olExchangePublicFolder)
@@ -41,7 +46,7 @@ namespace ChimeOutlookHelper
         catch (Exception e)
         {
           // Not every root folder has a calendar (for example, Public folders), so this exception can be ignored
-          Debug.WriteLine("Failed to get Calendar:\n" + e);
+          Debug.WriteLine($"Failed to get Calendar for {store?.DisplayName} type: {store?.ExchangeStoreType}:\n{e}");
         }
       }
 
