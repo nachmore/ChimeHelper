@@ -15,45 +15,61 @@ namespace ChimeOutlookHelper
 
     public static List<Outlook.Folder> GetCalendars()
     {
-      var outlook = new Outlook.Application();
-      var stores = outlook.Session.Stores;
-
       var folders = new List<Outlook.Folder>();
+
+      Outlook.Application outlook;
+      Outlook.Stores stores = null;
+
+      try
+      {
+        outlook = new Outlook.Application();
+        stores = outlook.Session.Stores;
+      }
+      catch (Exception e)
+      {
+        Debug.WriteLine($"Exception initializing Outlook in GetCalendars.\n{e}");
+
+        // this can generally be ignored (it's often a COM RETRYLATER when Outlook is stuck
+        // booting up etc). Regardless, there is no remediation, so let's bail.
+        //
+        // Note: Yes, this is a double return, yes the for loop will just exit and it will return
+        //       anyway, but who knows what will get added post the for at some point in the future
+        //       and what chaose that will cause. This exception is exceedingly rare so would rather
+        //       fail fast.
+        return folders;
+      }
 
       // foreach on COM objects can sometimes get into weird states when encountering
       // a corrupt pst,  where null objects repeat themselves, and a foreach goes into
       // an infinite loop, so prefer traditional for
-      for (int i = 0; i < stores.Count; i++)
-      {
-        Outlook.Store store = null;
-
-        try
+      for (int i = 0; i < stores?.Count; i++)
         {
-          // this is in the try since sometimes COM will freak out and throw
-          // IndexOutOfRangeException even though we're < Count (corrupt pst situation)
-          store = stores[i];
+          Outlook.Store store = null;
 
-          // ignore public folders (causes slow Exchange calls, and we don't have a use case
-          // for interactions with those)
-          if (store.ExchangeStoreType == Outlook.OlExchangeStoreType.olExchangePublicFolder)
-            continue;
+          try
+          {
+            // this is in the try since sometimes COM will freak out and throw
+            // IndexOutOfRangeException even though we're < Count (corrupt pst situation)
+            store = stores[i];
 
-          var folder = (Outlook.Folder)store.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
-          System.Diagnostics.Debug.WriteLine(folder.Name);
+            // ignore public folders (causes slow Exchange calls, and we don't have a use case
+            // for interactions with those)
+            if (store.ExchangeStoreType == Outlook.OlExchangeStoreType.olExchangePublicFolder)
+              continue;
 
-          folders.Add(folder);
+            var folder = (Outlook.Folder)store.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
+            System.Diagnostics.Debug.WriteLine(folder.Name);
+
+            folders.Add(folder);
+          }
+          catch (Exception e)
+          {
+            // Not every root folder has a calendar (for example, Public folders), so this exception can be ignored
+            Debug.WriteLine($"Failed to get Calendar for {store?.DisplayName} type: {store?.ExchangeStoreType}:\n{e}");
+          }
         }
-        catch (Exception e)
-        {
-          // Not every root folder has a calendar (for example, Public folders), so this exception can be ignored
-          Debug.WriteLine($"Failed to get Calendar for {store?.DisplayName} type: {store?.ExchangeStoreType}:\n{e}");
-        }
-      }
 
-      if (folders.Count > 0)
-        return folders;
-
-      throw new InvalidOperationException("Couldn't find a Calendar in the current Outlook installation");
+      return folders;
     }
 
     public static List<Outlook.AppointmentItem> GetAppointmentsAroundNow(Outlook.Folder calendar, int hours = DEFAULT_SEARCH_HOURS)
