@@ -3,7 +3,8 @@
                     xmlns:tb="http://www.hardcodet.net/taskbar"
                     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                     xmlns:chxaml ="clr-namespace:ChimeHelperUX.XAMLExtenders"
->
+                    xmlns:local="clr-namespace:ChimeHelperUX"
+                    >
 
   <chxaml:BoolToObjectConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
   <chxaml:BoolToObjectConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
@@ -311,7 +312,12 @@
 
   <tb:TaskbarIcon x:Name="ChimeHelperTaskbarIcon" x:Key="ChimeHelperTaskbarIcon"
       IconSource="{Binding IconSource}"
-      ToolTipText="{Binding ToolTipText}">
+      ToolTipText="{Binding ToolTipText}"
+      >
+
+    <tb:TaskbarIcon.DataContext>
+      <local:ChimeMeetingMenuItems></local:ChimeMeetingMenuItems>
+    </tb:TaskbarIcon.DataContext>
 
     <tb:TaskbarIcon.TrayPopup>
       <StackPanel MaxWidth="750">
@@ -330,12 +336,12 @@
               <Image Height="28" Width="28" Source="/Icons/fan.ico" Margin="10,0,0,0"></Image>
               <TextBlock VerticalAlignment="Center" FontSize="25" Foreground="White" FontWeight="Light" Margin="5,0,0,0">Chime Helper</TextBlock>
             </StackPanel>
-            
+
             <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="0,0,5,0">
               <Hyperlink Foreground="White" Command="{Binding StartMeetingMenuCommand}" 
                          CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Popup}}">Meet Now</Hyperlink>
             </TextBlock>
-            
+
           </Grid>
         </Border>
 
@@ -423,7 +429,7 @@
                 CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}" />
             </i:EventTrigger>
           </i:Interaction.Triggers>
-          
+
         </DataGrid>
         <TextBlock MaxWidth="450" Background="White" Padding="10,10,10,20" TextWrapping="Wrap" Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibilityConverter}}">
             There are no current meetings with Chime pins in your Outlook calendar that we could detect. By default we only consider meetings from a full hour ago to a full hour in the future, for example at 10:05 am we would look for meetings that are in progress between 9am to 12pm.
@@ -433,7 +439,7 @@
         </TextBlock>
       </StackPanel>
     </tb:TaskbarIcon.TrayPopup>
-    
+
     <!-- Set a simple context menu  -->
     <tb:TaskbarIcon.ContextMenu>
       <ContextMenu

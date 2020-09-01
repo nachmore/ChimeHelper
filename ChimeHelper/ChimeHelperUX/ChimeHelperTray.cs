@@ -17,206 +17,232 @@ namespace ChimeHelperUX
   {
     private readonly TaskbarIcon _tray;
 
-    protected const string DEFAULT_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan.ico";
-    protected const string NO_MEETINGS_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan-off.ico";
-    protected const string LOADING_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan-loading.ico";
+    internal const string DEFAULT_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan.ico";
+    internal const string NO_MEETINGS_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan-off.ico";
+    internal const string LOADING_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan-loading.ico";
 
-    /// <summary>
-    /// Explicitly separate from ChimeOutlookHelper.ChimeMeeting as these represent single meeting pins
-    /// </summary>
-    public class ChimeMeetingMenuItem
+    public static readonly ChimeMeetingMenuItems NO_MEETINGS =
+      new ChimeMeetingMenuItems(
+        iconURI: NO_MEETINGS_ICON,
+        tooltip: "Chime Helper: No Meetings Found"
+      );
+
+    public static readonly ChimeMeetingMenuItems MEETINGS_LOADING =
+      new ChimeMeetingMenuItems(
+        iconURI: LOADING_ICON,
+        tooltip: "Chime Helper: Loading..."
+      );
+
+    public ChimeHelperTray(TaskbarIcon trayIcon)
     {
-      public string Subject { get; set; }
-      public DateTime StartTime { get; set; }
-      public DateTime EndTime { get; set; }
+      _tray = trayIcon;
+      _tray.DataContext = MEETINGS_LOADING;
+    }
+
+  }
+
+  /// <summary>
+  /// Explicitly separate from ChimeOutlookHelper.ChimeMeeting as these represent single meeting pins
+  /// </summary>
+  public class ChimeMeetingMenuItem
+  {
+    public string Subject { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime EndTime { get; set; }
 
 
-      private string _pin;
-      public string Pin 
+    private string _pin;
+    public string Pin
+    {
+      get { return _pin; }
+      set
       {
-        get { return _pin; }
-        set 
+        if (long.TryParse(value, out long parsedPin))
         {
-          if (long.TryParse(value, out long parsedPin))
-          {
-            // we convert the pin to a number in order to parse it out nicely, but if there
-            // are leading zeros (0) we need to add them back in since they will be stripped 
-            // out by the conversion, we do this by padding to the size of the original number
-            // + the 2 extra spaces that we've added.
-            _pin = parsedPin.ToString("### #### ###").PadLeft(value.Length + 2, '0');
-          }
-          else
-          {
-            _pin = value;
-          }
+          // we convert the pin to a number in order to parse it out nicely, but if there
+          // are leading zeros (0) we need to add them back in since they will be stripped 
+          // out by the conversion, we do this by padding to the size of the original number
+          // + the 2 extra spaces that we've added.
+          _pin = parsedPin.ToString("### #### ###").PadLeft(value.Length + 2, '0');
         }
-      }
-
-      public ChimeMeetingMenuItem() { }
-
-      public static List<ChimeMeetingMenuItem> Create(ChimeMeeting meeting)
-      {
-        var rv = new List<ChimeMeetingMenuItem>();
-
-        foreach (var pin in meeting.Pins)
+        else
         {
-          rv.Add(new ChimeMeetingMenuItem(meeting, pin));
+          _pin = value;
         }
-
-        return rv;
-      }
-
-      private ChimeMeetingMenuItem(ChimeMeeting meeting, string pin)
-      {
-        this.Subject = meeting.Subject;
-        this.StartTime = meeting.StartTime;
-        this.EndTime = meeting.EndTime;
-        this.Pin = pin;
       }
     }
 
-    public class ChimeMeetingMenuItems<T> : List<T>
+    public ChimeMeetingMenuItem() { }
+
+    public static List<ChimeMeetingMenuItem> Create(ChimeMeeting meeting)
     {
-      public string IconSource { get; set; }
-      public string ToolTipText { get; set; }
-      public bool IsEmpty { get { return Count == 0; } }
+      var rv = new List<ChimeMeetingMenuItem>();
 
-      public ChimeMeetingMenuItems(string iconURI = DEFAULT_ICON, string tooltip = "Chime Helper")
+      foreach (var pin in meeting.Pins)
       {
-        IconSource = iconURI;
-        ToolTipText = tooltip;
+        rv.Add(new ChimeMeetingMenuItem(meeting, pin));
       }
 
-      public ICommand JoinMeetingCommand
+      return rv;
+    }
+
+    private ChimeMeetingMenuItem(ChimeMeeting meeting, string pin)
+    {
+      this.Subject = meeting.Subject;
+      this.StartTime = meeting.StartTime;
+      this.EndTime = meeting.EndTime;
+      this.Pin = pin;
+    }
+  }
+
+  public class ChimeMeetingMenuItems : List<ChimeMeetingMenuItem>
+  {
+    public string IconSource { get; set; }
+    public string ToolTipText { get; set; }
+    public bool IsEmpty { get { return Count == 0; } }
+
+    // an empty constructor is required in order to be visible in XAML, unfortunately an all optional / default
+    // constructor doesn't count
+    public ChimeMeetingMenuItems() : this(ChimeHelperTray.DEFAULT_ICON)
+    {
+    }
+
+    public ChimeMeetingMenuItems(string iconURI, string tooltip = "Chime Helper")
+    {
+      IconSource = iconURI;
+      ToolTipText = tooltip;
+    }
+
+    public ICommand JoinMeetingCommand
+    {
+      get
       {
-        get
-        {
-          return new DelegateCommand(
-            (object parameter) =>
-            {
-              var datagrid = (DataGrid)parameter;
-              var meeting = (ChimeMeetingMenuItem)datagrid.SelectedItem;
-
-              // will be null when we clear the selected item, since that also triggers a change event
-              // or when the DG's DataContext is refreshed
-              if (meeting != null)
-              {
-                // clears the selection style
-                datagrid.SelectedCells.Clear();
-
-                // clears the actual selected item, allows the same item to be selected again
-                datagrid.UnselectAll();
-
-                ChimeHelper.Chime.Join(meeting.Pin);
-
-                // hide the popup on meeting selection
-                var popup = datagrid.FindAncestor<Popup>();
-                popup.IsOpen = false;
-              }
-            }
-          );
-        }
-      }
-
-      public ICommand StartMeetingMenuCommand
-      {
-        get
-        {
-          return new DelegateCommand(
-            (object parameter) =>
-            {
-              // if this came from the popup then close the popup
-              if (parameter is Popup)
-              {
-                ((Popup)parameter).IsOpen = false;
-              }
-
-              var personalID = Properties.Settings.Default.ChimeBridgePersonalID ?? Properties.Settings.Default.ChimeBridgePersonalizedID;
-              var personalizedID = Properties.Settings.Default.ChimeBridgePersonalizedID ?? personalID;
-
-              if (string.IsNullOrEmpty(personalID) && string.IsNullOrEmpty(personalizedID))
-              {
-                SettingsWindow.CreateAndShow();
-              }
-              else
-              {
-                ChimeHelper.Chime.Join(personalizedID);
-              }
-            }
-          );
-        }
-      }
-
-      public ICommand ShowJoinMeetingDialogMenuCommand
-      {
-        get
-        {
-          return new DelegateCommand(
-            (object paramater) =>
-            {
-              JoinMeetingDialog.CreateAndShow();
-            }
-          );
-        }
-      }
-
-      public ICommand ShortChimeStringMenuCommand
-      {
-        get
-        {
-          return new DelegateCommand(
-            (object parameter) =>
-            {
-
-              var personalID = Properties.Settings.Default.ChimeBridgePersonalID;
-              var personalizedID = Properties.Settings.Default.ChimeBridgePersonalizedID;
-
-              if (string.IsNullOrEmpty(personalID) &&
-                  string.IsNullOrEmpty(personalizedID))
-              {
-                SettingsWindow.CreateAndShow();
-              } 
-              else
-              {
-
-                string chimeText;
-
-                if (personalID != null && personalizedID != null)
-                {
-                  chimeText = $"Chime ({personalizedID} / {personalID})";
-                } 
-                else if (personalID != null)
-                {
-                  chimeText = $"Chime ({personalID})";
-                } 
-                else
-                {
-                  chimeText = $"Chime ({personalizedID})";
-                }
-
-                Clipboard.SetText(chimeText);
-              }
-            }
-         );
-        }
-      }
-      public ICommand FullChimeStringMenuCommand
-      {
-        get
-        {
-          return new DelegateCommand(
+        return new DelegateCommand(
           (object parameter) =>
           {
+            var datagrid = (DataGrid)parameter;
+            var meeting = (ChimeMeetingMenuItem)datagrid.SelectedItem;
+
+            // will be null when we clear the selected item, since that also triggers a change event
+            // or when the DG's DataContext is refreshed
+            if (meeting != null)
+            {
+              // clears the selection style
+              datagrid.SelectedCells.Clear();
+
+              // clears the actual selected item, allows the same item to be selected again
+              datagrid.UnselectAll();
+
+              ChimeHelper.Chime.Join(meeting.Pin);
+
+              // hide the popup on meeting selection
+              var popup = datagrid.FindAncestor<Popup>();
+              popup.IsOpen = false;
+            }
+          }
+        );
+      }
+    }
+
+    public ICommand StartMeetingMenuCommand
+    {
+      get
+      {
+        return new DelegateCommand(
+          (object parameter) =>
+          {
+            // if this came from the popup then close the popup
+            if (parameter is Popup)
+            {
+              ((Popup)parameter).IsOpen = false;
+            }
+
             var personalID = Properties.Settings.Default.ChimeBridgePersonalID ?? Properties.Settings.Default.ChimeBridgePersonalizedID;
             var personalizedID = Properties.Settings.Default.ChimeBridgePersonalizedID ?? personalID;
 
             if (string.IsNullOrEmpty(personalID) && string.IsNullOrEmpty(personalizedID))
             {
               SettingsWindow.CreateAndShow();
-              return;
             }
+            else
+            {
+              ChimeHelper.Chime.Join(personalizedID);
+            }
+          }
+        );
+      }
+    }
 
-            var fullChimeText = 
+    public ICommand ShowJoinMeetingDialogMenuCommand
+    {
+      get
+      {
+        return new DelegateCommand(
+          (object paramater) =>
+          {
+            JoinMeetingDialog.CreateAndShow();
+          }
+        );
+      }
+    }
+
+    public ICommand ShortChimeStringMenuCommand
+    {
+      get
+      {
+        return new DelegateCommand(
+          (object parameter) =>
+          {
+
+            var personalID = Properties.Settings.Default.ChimeBridgePersonalID;
+            var personalizedID = Properties.Settings.Default.ChimeBridgePersonalizedID;
+
+            if (string.IsNullOrEmpty(personalID) &&
+                string.IsNullOrEmpty(personalizedID))
+            {
+              SettingsWindow.CreateAndShow();
+            }
+            else
+            {
+
+              string chimeText;
+
+              if (personalID != null && personalizedID != null)
+              {
+                chimeText = $"Chime ({personalizedID} / {personalID})";
+              }
+              else if (personalID != null)
+              {
+                chimeText = $"Chime ({personalID})";
+              }
+              else
+              {
+                chimeText = $"Chime ({personalizedID})";
+              }
+
+              Clipboard.SetText(chimeText);
+            }
+          }
+       );
+      }
+    }
+    public ICommand FullChimeStringMenuCommand
+    {
+      get
+      {
+        return new DelegateCommand(
+        (object parameter) =>
+        {
+          var personalID = Properties.Settings.Default.ChimeBridgePersonalID ?? Properties.Settings.Default.ChimeBridgePersonalizedID;
+          var personalizedID = Properties.Settings.Default.ChimeBridgePersonalizedID ?? personalID;
+
+          if (string.IsNullOrEmpty(personalID) && string.IsNullOrEmpty(personalizedID))
+          {
+            SettingsWindow.CreateAndShow();
+            return;
+          }
+
+          var fullChimeText =
 $@"You have been invited to an online meeting, powered by Amazon Chime.
 
 1.Click to join the meeting: https://chime.aws/{personalizedID}
@@ -240,82 +266,65 @@ $@"You have been invited to an online meeting, powered by Amazon Chime.
   International: https://chime.aws/dialinnumbers/
 ";
 
-            Clipboard.SetText(fullChimeText);
-          }
-         );
+          Clipboard.SetText(fullChimeText);
         }
+       );
       }
-      public ICommand SettingsMenuCommand
+    }
+    public ICommand SettingsMenuCommand
+    {
+      get
       {
-        get
+        return new DelegateCommand(
+        (object parameter) =>
         {
-          return new DelegateCommand(
-          (object parameter) =>
-          {
-            SettingsWindow.CreateAndShow();
-          }
-         );
+          SettingsWindow.CreateAndShow();
         }
+       );
       }
-
-      public ICommand CheckNowMenuCommand
-      {
-        get
-        {
-          return new DelegateCommand(
-          (object parameter) =>
-          {
-            ChimeHelperState.Instance.CheckForChimeMeetingsAsync();
-          }
-         );
-        }
-      }
-
-      public ICommand AboutMenuCommand
-      {
-        get
-        {
-          return new DelegateCommand(
-          (object parameter) =>
-          {
-            AboutWindow.CreateAndShow();
-          }
-         );
-        }
-      }
-
-      public ICommand ExitMenuCommand
-      {
-        get
-        {
-          return new DelegateCommand(
-          (object parameter) =>
-          {
-            App.Current.Shutdown();
-          }
-         );
-        }
-      }
-
     }
 
-    public static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> NO_MEETINGS =
-      new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(
-        iconURI: NO_MEETINGS_ICON,
-        tooltip: "Chime Helper: No Meetings Found"
-      );
-
-    public static readonly ChimeMeetingMenuItems<ChimeMeetingMenuItem> MEETINGS_LOADING =
-      new ChimeMeetingMenuItems<ChimeMeetingMenuItem>(
-        iconURI: LOADING_ICON,
-        tooltip: "Chime Helper: Loading..."
-      );
-    
-    public ChimeHelperTray(TaskbarIcon trayIcon)
+    public ICommand CheckNowMenuCommand
     {
-      _tray = trayIcon;
-      _tray.DataContext = MEETINGS_LOADING;
+      get
+      {
+        return new DelegateCommand(
+        (object parameter) =>
+        {
+          ChimeHelperState.Instance.CheckForChimeMeetingsAsync();
+        }
+       );
+      }
+    }
+
+    public ICommand AboutMenuCommand
+    {
+      get
+      {
+        return new DelegateCommand(
+        (object parameter) =>
+        {
+          AboutWindow.CreateAndShow();
+        }
+       );
+      }
+    }
+
+    public ICommand ExitMenuCommand
+    {
+      get
+      {
+        return new DelegateCommand(
+        (object parameter) =>
+        {
+          App.Current.Shutdown();
+        }
+       );
+      }
     }
 
   }
+
 }
+
+
