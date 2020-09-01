@@ -78,7 +78,7 @@ namespace ChimeHelperUX
 
     private void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
     {
-      if (e.Reason == Microsoft.Win32.SessionSwitchReason.SessionUnlock) 
+      if (e.Reason == Microsoft.Win32.SessionSwitchReason.SessionUnlock)
       {
 
         var timeSinceLastCheck = DateTime.Now.Subtract(_lastCheck).TotalMinutes;
@@ -110,7 +110,7 @@ namespace ChimeHelperUX
 
       _timerState = TimerState.FIRST;
 
-      var initialPeriod = TimerIntervalMinutes  - DEFAULT_INTERVAL_OFFSET_MIN - (DateTime.Now.Minute % TimerIntervalMinutes);
+      var initialPeriod = TimerIntervalMinutes - DEFAULT_INTERVAL_OFFSET_MIN - (DateTime.Now.Minute % TimerIntervalMinutes);
 
       _timer = new Timer(CheckForChimeMeetings, true, 1000, DEFAULT_CHECK_INTERVAL_MIN * 60 * 1000);
 
@@ -160,7 +160,7 @@ namespace ChimeHelperUX
       _lastCheck = DateTime.Now;
 
       var meetings = ChimeOutlookHelper.ChimeOutlookHelper.GetMeetings();
-      var meetingMenuItems = new ChimeMeetingMenuItems<ChimeMeetingMenuItem>();
+      var meetingMenuItems = new ChimeMeetingMenuItems();
 
       foreach (var meeting in meetings)
       {
