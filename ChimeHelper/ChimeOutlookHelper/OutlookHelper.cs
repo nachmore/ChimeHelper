@@ -42,7 +42,10 @@ namespace ChimeOutlookHelper
       // foreach on COM objects can sometimes get into weird states when encountering
       // a corrupt pst,  where null objects repeat themselves, and a foreach goes into
       // an infinite loop, so prefer traditional for
-      for (int i = 0; i < stores?.Count; i++)
+      //
+      // Note: These are one-based arrays
+      //       See: https://docs.microsoft.com/en-us/dotnet/api/microsoft.office.interop.outlook._stores.item?view=outlook-pia#Microsoft_Office_Interop_Outlook__Stores_Item_System_Object_
+      for (int i = 1; i <= stores?.Count; i++)
         {
           Outlook.Store store = null;
 
@@ -58,7 +61,7 @@ namespace ChimeOutlookHelper
               continue;
 
             var folder = (Outlook.Folder)store.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
-            System.Diagnostics.Debug.WriteLine(folder.Name);
+            System.Diagnostics.Debug.WriteLine($"Found calendar: {folder.Name} in store {store.DisplayName}");
 
             folders.Add(folder);
           }
