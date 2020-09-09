@@ -1,5 +1,6 @@
 ﻿using ChimeHelperUX.UXHelpers;
 using Hardcodet.Wpf.TaskbarNotification;
+using Hardcodet.Wpf.TaskbarNotification.Interop;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -34,8 +35,12 @@ namespace ChimeHelperUX
     {
       _tray = trayIcon;
       _tray.DataContext = MEETINGS_LOADING;
-    }
 
+      // workaround for an apparent bug in TrayIcon where the first menu appearance
+      // often happens in one of the corners of the screen. Calling GetTrayLocation
+      // seems to wake Windows up to the real location which is then used subsequently.
+      TrayInfo.GetTrayLocation();
+    }
   }
 
   /// <summary>
