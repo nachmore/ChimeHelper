@@ -105,13 +105,13 @@ namespace ChimeOutlookHelper
       // issue, even if the code is a little more weird.
 
       // find all meetings that start within the period (regardless of when they end specifically)
-      var filter = $"[Start] >= '{start.ToString("g")}' AND [Start] <= '{end.ToString("g")}'";
+      var filter = $"[Start] >= '{start:g}' AND [Start] <= '{end:g}'";
 
       var rv = RestrictItems(folder, filter, includeRecurrences);
 
       // find meetings that are in-progress during the period (for example, all day events that start before the period but end
       // during or after it
-      filter = $"[Start] < '{start.ToString("g")}' AND [End] >= '{start.ToString("g")}'";
+      filter = $"[Start] < '{start:g}' AND [End] >= '{start:g}'";
 
       rv.AddRange(RestrictItems(folder, filter, includeRecurrences));
 
