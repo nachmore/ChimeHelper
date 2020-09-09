@@ -40,6 +40,7 @@ namespace ChimeHelperUX.UXHelpers
     private static Point GetMousePosition(Control target)
     {
       var point = Mouse.GetPosition(target);
+      point = target.PointToScreen(point);
 
       return new Point(point.X, point.Y);
     }
