@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace ChimeHelper
@@ -10,7 +11,12 @@ namespace ChimeHelper
 
     public static void Join(string pin)
     {
-      System.Diagnostics.Process.Start(String.Format(MEETING_URL_FORMAT, pin));
+      var chimeUrlProcess = new Process();
+
+      chimeUrlProcess.StartInfo.UseShellExecute = true;
+      chimeUrlProcess.StartInfo.FileName = String.Format(MEETING_URL_FORMAT, pin);
+
+      chimeUrlProcess.Start();
     }
 
     /// <summary>
