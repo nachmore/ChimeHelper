@@ -154,9 +154,9 @@ namespace ChimeHelperUX
           (object parameter) =>
           {
             // if this came from the popup then close the popup
-            if (parameter is Popup)
+            if (parameter is Popup popup)
             {
-              ((Popup)parameter).IsOpen = false;
+              popup.IsOpen = false;
             }
 
             var personalID = Properties.Settings.Default.ChimeBridgePersonalID ?? Properties.Settings.Default.ChimeBridgePersonalizedID;
