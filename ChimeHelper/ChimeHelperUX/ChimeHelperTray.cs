@@ -1,10 +1,7 @@
-﻿using Hardcodet.Wpf.TaskbarNotification;
-using Microsoft.VisualStudio.PlatformUI;
+﻿using ChimeHelperUX.UXHelpers;
+using Hardcodet.Wpf.TaskbarNotification;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -117,7 +114,7 @@ namespace ChimeHelperUX
     {
       get
       {
-        return new DelegateCommand(
+        return new ActionCommand(
           (object parameter) =>
           {
             var datagrid = (DataGrid)parameter;
@@ -136,7 +133,7 @@ namespace ChimeHelperUX
               ChimeHelper.Chime.Join(meeting.Pin);
 
               // hide the popup on meeting selection
-              var popup = datagrid.FindAncestor<Popup>();
+              var popup = AncestorHelper.FindAncestor<Popup>(datagrid);
               popup.IsOpen = false;
             }
           }
@@ -148,7 +145,7 @@ namespace ChimeHelperUX
     {
       get
       {
-        return new DelegateCommand(
+        return new ActionCommand(
           (object parameter) =>
           {
             // if this came from the popup then close the popup
@@ -177,7 +174,7 @@ namespace ChimeHelperUX
     {
       get
       {
-        return new DelegateCommand(
+        return new ActionCommand(
           (object paramater) =>
           {
             JoinMeetingDialog.CreateAndShow();
@@ -190,7 +187,7 @@ namespace ChimeHelperUX
     {
       get
       {
-        return new DelegateCommand(
+        return new ActionCommand(
           (object parameter) =>
           {
 
@@ -230,7 +227,7 @@ namespace ChimeHelperUX
     {
       get
       {
-        return new DelegateCommand(
+        return new ActionCommand(
         (object parameter) =>
         {
           var personalID = Properties.Settings.Default.ChimeBridgePersonalID ?? Properties.Settings.Default.ChimeBridgePersonalizedID;
@@ -275,7 +272,7 @@ $@"You have been invited to an online meeting, powered by Amazon Chime.
     {
       get
       {
-        return new DelegateCommand(
+        return new ActionCommand(
         (object parameter) =>
         {
           SettingsWindow.CreateAndShow();
@@ -288,7 +285,7 @@ $@"You have been invited to an online meeting, powered by Amazon Chime.
     {
       get
       {
-        return new DelegateCommand(
+        return new ActionCommand(
         (object parameter) =>
         {
           ChimeHelperState.Instance.CheckForChimeMeetingsAsync();
@@ -301,7 +298,7 @@ $@"You have been invited to an online meeting, powered by Amazon Chime.
     {
       get
       {
-        return new DelegateCommand(
+        return new ActionCommand(
         (object parameter) =>
         {
           AboutWindow.CreateAndShow();
@@ -314,7 +311,7 @@ $@"You have been invited to an online meeting, powered by Amazon Chime.
     {
       get
       {
-        return new DelegateCommand(
+        return new ActionCommand(
         (object parameter) =>
         {
           App.Current.Shutdown();

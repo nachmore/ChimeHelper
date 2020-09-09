@@ -64,22 +64,25 @@ UninstPage instfiles
 !define NET_RELEASE "461808" 
 !define NETInstaller "NDP472-KB4054531-Web.exe"
 
-Section "Microsoft .NET Framework Updater (required)" SecDotNet
+Section "Check for .Net Core 3.1 (required)" SecDotNet
   SectionIn RO
 
-  ReadRegStr $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" "Release"
+  DetailPrint "Searching for required .NET Core version..."
 
-  IntCmp $0 ${NET_RELEASE} UpdateNotNeeded UpdateDotNet UpdateNotNeeded
+  nsExec::ExecToLog 'cmd /c dotnet --info | findstr /c:"Version: 3.1"'
+  Pop $0
+  
+  DetailPrint "-> rv: $0"
+
+  IntCmp $0 0 UpdateNotNeeded UpdateDotNet UpdateDotNet
 
   UpdateDotNet:
-    File /oname=$TEMP\${NETInstaller} ${NETInstaller}
- 
-    DetailPrint "Starting Microsoft .NET Framework v${NET_RELEASE} Setup..."
-    ExecWait "$TEMP\${NETInstaller}"
+    DetailPrint "You may need to update / install .NET Core 3.1 or newer. Go to: https://dotnet.microsoft.com/download/dotnet-core/3.1 for details"
+    MessageBox MB_ICONINFORMATION "You may need to update / install .NET Core 3.1 or newer. Go to: https://dotnet.microsoft.com/download/dotnet-core/3.1 for details"
     Return
  
   UpdateNotNeeded:
-    DetailPrint "Microsoft .NET Framework is already up to date!"
+    DetailPrint "Required Microsoft .NET Core is already installed!"
 
 SectionEnd
 
@@ -120,11 +123,10 @@ Section "Chime Helper (required)" SecChimeHelper
   SetOutPath $INSTDIR
   
   ; Put file there
-  File "..\ChimeHelperUX\bin\Release\ChimeHelper.exe"	
-  File "..\ChimeHelperUX\bin\Release\ChimeHelper.exe.config"
-  File "..\ChimeHelperUX\bin\Release\*.dll"
-  File "..\ChimeHelperUX\bin\Release\*.xml"
-  File "..\..\LICENSE"
+  File "..\ChimeHelperUX\bin\Release\netcoreapp3.1\*.exe*"	
+  File "..\ChimeHelperUX\bin\Release\netcoreapp3.1\*.dll*"
+  File "..\ChimeHelperUX\bin\Release\netcoreapp3.1\*.json"
+    File "..\..\LICENSE"
   File "..\..\OTHER_LICENSES"
 
   ; Write the uninstall keys for Windows

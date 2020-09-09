@@ -18,7 +18,7 @@ namespace ChimeOutlookHelper
       var folders = new List<Outlook.Folder>();
 
       Outlook.Application outlook;
-      Outlook.Stores stores = null;
+      Outlook.Stores stores;
 
       try
       {
