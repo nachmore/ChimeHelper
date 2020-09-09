@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChimeHelperUX", "ChimeHelpe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChimeOutlookHelper", "ChimeOutlookHelper\ChimeOutlookHelper.csproj", "{CBCFBE2F-239F-4F18-A4FC-A59C44ECBD60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChimeHelperTests", "ChimeHelperTests\ChimeHelperTests.csproj", "{A483C81B-89F6-4AE9-BB0F-18177FF7D82F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{BC5F172A-A91D-4009-B8C1-D8DAE3A24750}"
 	ProjectSection(SolutionItems) = preProject
 		InstallScript\ChimeHelperInstaller.nsi = InstallScript\ChimeHelperInstaller.nsi
@@ -41,14 +39,6 @@ Global
 		{CBCFBE2F-239F-4F18-A4FC-A59C44ECBD60}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CBCFBE2F-239F-4F18-A4FC-A59C44ECBD60}.Release|x86.ActiveCfg = Release|Any CPU
 		{CBCFBE2F-239F-4F18-A4FC-A59C44ECBD60}.Release|x86.Build.0 = Release|Any CPU
-		{A483C81B-89F6-4AE9-BB0F-18177FF7D82F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A483C81B-89F6-4AE9-BB0F-18177FF7D82F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A483C81B-89F6-4AE9-BB0F-18177FF7D82F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A483C81B-89F6-4AE9-BB0F-18177FF7D82F}.Debug|x86.Build.0 = Debug|Any CPU
-		{A483C81B-89F6-4AE9-BB0F-18177FF7D82F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A483C81B-89F6-4AE9-BB0F-18177FF7D82F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A483C81B-89F6-4AE9-BB0F-18177FF7D82F}.Release|x86.ActiveCfg = Release|Any CPU
-		{A483C81B-89F6-4AE9-BB0F-18177FF7D82F}.Release|x86.Build.0 = Release|Any CPU
 		{CBCFBE2F-139F-4F18-A4FC-A59C44ECBD60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CBCFBE2F-139F-4F18-A4FC-A59C44ECBD60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBCFBE2F-139F-4F18-A4FC-A59C44ECBD60}.Debug|x86.ActiveCfg = Debug|Any CPU

@@ -58,7 +58,8 @@ namespace ChimeHelperUX
 
       try
       {
-        eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset, @"Global\nachmore.ChimeHelper.IsRunning", out bool createdNew, security);
+        eventWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset, @"Global\nachmore.ChimeHelper.IsRunning", out bool createdNew);
+        eventWaitHandle.SetAccessControl(security);
       }
       catch (Exception e)
       {

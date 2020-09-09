@@ -1,13 +1,6 @@
 ﻿using ChimeHelperUX.UXHelpers;
-using Microsoft.VisualStudio.PlatformUI;
 using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using static ChimeOutlookHelper.ChimeOutlookHelper;
 
 namespace ChimeHelperUX
 {
