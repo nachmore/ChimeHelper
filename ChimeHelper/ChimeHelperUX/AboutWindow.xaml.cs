@@ -35,7 +35,7 @@ namespace ChimeHelperUX
     {
       var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 
-      var date = new DateTime(2020, 1, 1).AddDays(version.Build).AddMinutes(version.Build);
+      var date = new DateTime(2020, 1, 1).AddDays(version.Build).AddMinutes(version.MinorRevision);
 
       Version = $"{version.Major}.{version.Minor} Build Date: {date:yyyy-MM-dd HH:mm}";
     }
