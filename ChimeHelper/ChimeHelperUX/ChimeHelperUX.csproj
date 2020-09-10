@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <AssemblyName>ChimeHelper</AssemblyName>
@@ -30,11 +30,57 @@
     <Product>ChimeHelper</Product>
     <Copyright>Copyright ©  2019</Copyright>
     <Deterministic>false</Deterministic>
-    <VersionSuffix>2.$([System.DateTime]::UtcNow.ToString(yyyy)).$([System.DateTime]::UtcNow.ToString(Md)).$([System.DateTime]::UtcNow.ToString(HHmm))</VersionSuffix>
-    <AssemblyVersion Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</AssemblyVersion>
-    <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
-    <AssemblyVersion>$(VersionSuffix)</AssemblyVersion>
-    <FileVersion>$(VersionSuffix)</FileVersion>
+
+    <!--
+      Debug the below with:
+
+      msbuild ChimeHelperUX.csproj /filelogger /fileLoggerParameters:Verbosity=diag
+
+      (output in msbuild.log)
+    -->
+    <DateSuffix>
+      $(
+        [System.DateTime]::UtcNow.Subtract(
+          $([System.DateTime]::Parse(2020-01-01))
+        ).Days
+      )
+    </DateSuffix>
+
+    <HourMinutes>
+      $(
+        [MSBuild]::Multiply(
+          $(
+            [System.DateTime]::UtcNow.Hour
+          ),
+          60
+        )
+      )
+    </HourMinutes>
+
+    <Minutes>
+      $(
+        [System.DateTime]::UtcNow.Minute
+      )
+    </Minutes>
+
+    <Timesuffix>
+      $(
+        [MSBuild]::Add(
+          $(HourMinutes),
+          $(Minutes)
+        )
+      )
+    </Timesuffix>
+
+    <!--
+      Properties are strings, so whitespace in the evaluation is maintained. Trim it out so that
+      the value can be converted nicely to the build number
+    -->
+    <TimeSuffix>$(TimeSuffix.Trim())</TimeSuffix>
+    <DateSuffix>$(DateSuffix.Trim())</DateSuffix>
+
+    <AssemblyVersion>2.0.$(DateSuffix).$(TimeSuffix)</AssemblyVersion>
+    <FileVersion>2.0.$(DateSuffix).$(TimeSuffix)</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
     <PreBuildEvent />
@@ -93,6 +139,7 @@
     <Resource Include="Icons\fan-off.ico" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="GitHubReleaseChecker" Version="0.5.0" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.13" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
   </ItemGroup>
