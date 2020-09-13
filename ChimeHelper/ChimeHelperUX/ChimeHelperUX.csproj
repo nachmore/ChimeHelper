@@ -27,8 +27,8 @@
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <AssemblyTitle>ChimeHelper</AssemblyTitle>
-    <Product>ChimeHelper</Product>
-    <Copyright>Copyright ©  2019</Copyright>
+    <Product>Chime Helper</Product>
+    <Copyright>Copyright ©  2019, 2020</Copyright>
     <Deterministic>false</Deterministic>
 
     <!--
@@ -116,6 +116,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent />
+    <Version>2.0.0</Version>
+    <Authors>Oren Nachman</Authors>
+    <Company>nachmore</Company>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/nachmore/AmazonChimeHelper</PackageProjectUrl>
   </PropertyGroup>
   <Target Name="PostBuild" BeforeTargets="PostBuildEvent">
     <Exec Command="&#xD;&#xA;      if $(ConfigurationName) == Release (&#xD;&#xA;        &quot;C:\Program Files (x86)\NSIS\makensis.exe&quot; $(SolutionDir)\InstallScript\ChimeHelperInstaller.nsi&#xD;&#xA;      )" />
