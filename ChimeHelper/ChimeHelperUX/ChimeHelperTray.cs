@@ -1,4 +1,5 @@
 ﻿using ChimeHelperUX.UXHelpers;
+using GitHubReleaseChecker;
 using Hardcodet.Wpf.TaskbarNotification;
 using Hardcodet.Wpf.TaskbarNotification.Interop;
 using System;
@@ -103,6 +104,8 @@ namespace ChimeHelperUX
     public string ToolTipText { get; set; }
     public bool IsEmpty { get { return Count == 0; } }
 
+    public ReleaseChecker UpdateState { get { return ChimeHelperState.Instance.UpdateState; } }
+
     // an empty constructor is required in order to be visible in XAML, unfortunately an all optional / default
     // constructor doesn't count
     public ChimeMeetingMenuItems() : this(ChimeHelperTray.DEFAULT_ICON)
@@ -115,6 +118,18 @@ namespace ChimeHelperUX
       ToolTipText = tooltip;
     }
 
+    public ICommand UpdateNowCommand
+    {
+      get
+      {
+        return new ActionCommand(
+          (object parameter) =>
+          {
+            ChimeHelperState.Instance.UpdateState.UpdateNow();
+          }
+        );
+      }
+    }
     public ICommand JoinMeetingCommand
     {
       get
