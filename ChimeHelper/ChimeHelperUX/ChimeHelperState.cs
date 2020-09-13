@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GitHubReleaseChecker;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -49,8 +50,6 @@ namespace ChimeHelperUX
     /// </summary>
     private const int STALE_INTERVAL_MIN = 1;
 
-    public int TimerIntervalMinutes { get; set; }
-
     private Timer _timer;
     private DateTime _lastCheck;
 
@@ -58,6 +57,19 @@ namespace ChimeHelperUX
 
     // this could be passes as stateInfo to the Timer, but is useful for debugging
     private TimerState _timerState;
+
+    public int TimerIntervalMinutes { get; set; }
+    public ReleaseChecker UpdateState { get; set; }
+
+
+    private static Version _version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+    private static double _versionDouble = Double.Parse($"{_version.Major}.{_version.Minor}");
+    private static string _versionString = $"v{_version.Major}.{_version.Minor}";
+    private static DateTime _versionBuildDate = new DateTime(2020, 1, 1).AddDays(_version.Build).AddMinutes(_version.MinorRevision);
+
+    public double Version { get { return _versionDouble; } }
+    public string VersionString { get { return _versionString; } }
+    public DateTime BuildDate { get { return _versionBuildDate; } }
 
     private ChimeHelperState(int timerIntervalMinutes = DEFAULT_CHECK_INTERVAL_MIN)
     {
@@ -71,6 +83,7 @@ namespace ChimeHelperUX
       if (_timerState == TimerState.STOPPED)
       {
         StartMeetingTimer();
+        StartCheckForUpdatesTimer();
 
         Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
       }
@@ -173,5 +186,15 @@ namespace ChimeHelperUX
       }));
     }
 
+    private void StartCheckForUpdatesTimer()
+    {
+      var updateTimer = new Timer(CheckForUpdates, null, 0, 24 * 60 * 60);
+    }
+
+    private void CheckForUpdates(object state)
+    {
+      UpdateState = new ReleaseChecker("nachmore", "AmazonChimeHelper");
+      UpdateState.MonitorForUpdates(VersionString);
+    }
   }
 }

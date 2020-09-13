@@ -33,11 +33,7 @@ namespace ChimeHelperUX
 
     private void InitVersion()
     {
-      var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-
-      var date = new DateTime(2020, 1, 1).AddDays(version.Build).AddMinutes(version.MinorRevision);
-
-      Version = $"{version.Major}.{version.Minor} Build Date: {date:yyyy-MM-dd HH:mm}";
+      Version = $"{ChimeHelperState.Instance.VersionString} Build Date: {ChimeHelperState.Instance.BuildDate:yyyy-MM-dd HH:mm}";
     }
   }
 }
