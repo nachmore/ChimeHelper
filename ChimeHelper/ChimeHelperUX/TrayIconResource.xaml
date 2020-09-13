@@ -341,8 +341,17 @@
               <Hyperlink Foreground="White" Command="{Binding StartMeetingMenuCommand}" 
                          CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Popup}}">Meet Now</Hyperlink>
             </TextBlock>
-
           </Grid>
+        </Border>
+
+        <Border Height="30" Background="OrangeRed" Visibility="{Binding UpdateState.UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}">
+
+          <StackPanel VerticalAlignment="Center">
+            <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Bold">
+              <Hyperlink Foreground="White" Command="{Binding UpdateNowCommand}"
+                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Popup}}">Update Available! Click here to update</Hyperlink>
+            </TextBlock>
+          </StackPanel>
         </Border>
 
         <DataGrid x:Name="ChimeMeetings" ItemsSource="{Binding}" 
@@ -444,6 +453,10 @@
     <tb:TaskbarIcon.ContextMenu>
       <ContextMenu
             Background="#192a38" Foreground="White" Margin="0" BorderBrush="#007980" BorderThickness="1" ItemTemplate="{StaticResource MenuItemTemplate}" UsesItemContainerTemplate="True">
+
+        <MenuItem Header="Update Available!" Foreground="OrangeRed" Command="{Binding UpdateNowCommand}" Visibility="{Binding UpdateState.UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <Separator Visibility="{Binding UpdateState.UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
         <MenuItem Header="Start Meeting (Personal ID)" Command="{Binding StartMeetingMenuCommand}"/>
         <MenuItem Header="Join Meeting" Command="{Binding ShowJoinMeetingDialogMenuCommand}"/>
         <Separator/>
