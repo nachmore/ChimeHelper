@@ -1,9 +1,11 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using System;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace ChimeHelperUX
@@ -17,6 +19,11 @@ namespace ChimeHelperUX
     public static TaskbarIcon TrayIcon { get; set; }
 
     private Thread _exitRequestWaiter;
+
+    public App() : base()
+    {
+      SetupUnhandledExceptionHanders();
+    }
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -87,5 +94,47 @@ namespace ChimeHelperUX
       _exitRequestWaiter.Start();
     }
 
+    // Based on: https://blog.danskingdom.com/Catch-and-display-unhandled-exceptions-in-your-WPF-app/
+    private void SetupUnhandledExceptionHanders()
+    {
+      // Catch exceptions from all threads in the AppDomain.
+      AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+          ShowUnhandledException(args.ExceptionObject as Exception, "AppDomain UnhandledException", false);
+
+      // Catch exceptions from each AppDomain that uses a task scheduler for async operations.
+      TaskScheduler.UnobservedTaskException += (sender, args) =>
+          ShowUnhandledException(args.Exception, "TaskScheduler UnobservedTaskException", false);
+
+      // Catch exceptions from the UI thread
+      DispatcherUnhandledException += (sender, args) =>
+      {
+        // If we are debugging, let Visual Studio handle the exception and take us to the code that threw it.
+        if (!Debugger.IsAttached)
+        {
+          args.Handled = true;
+          ShowUnhandledException(args.Exception, "Dispatcher UnhandledException", true);
+        }
+      };
+    }
+
+    void ShowUnhandledException(Exception e, string unhandledExceptionType, bool promptUserForShutdown)
+    {
+      var messageBoxTitle = $"Chime Helper: {unhandledExceptionType}";
+
+      var messageBoxMessage = $"Apologies, an unexpected error has occurred! Hit Ctrl+C and send us the output so that we can fix the issue!\n\n{e}";
+      var messageBoxButtons = MessageBoxButton.OK;
+
+      if (promptUserForShutdown)
+      {
+        messageBoxMessage += "\n\nNormally the app would die now. Should we let it die?";
+        messageBoxButtons = MessageBoxButton.YesNo;
+      }
+
+      // Let the user decide if the app should die or not (if applicable).
+      if (MessageBox.Show(messageBoxMessage, messageBoxTitle, messageBoxButtons, MessageBoxImage.Error) == MessageBoxResult.Yes)
+      {
+        Application.Current.Shutdown();
+      }
+    }
   }
 }
