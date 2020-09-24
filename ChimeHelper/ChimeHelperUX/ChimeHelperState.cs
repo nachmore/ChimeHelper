@@ -83,7 +83,7 @@ namespace ChimeHelperUX
       if (_timerState == TimerState.STOPPED)
       {
         StartMeetingTimer();
-        StartCheckForUpdatesTimer();
+        StartCheckForUpdates();
 
         Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
       }
@@ -186,15 +186,16 @@ namespace ChimeHelperUX
       }));
     }
 
-    private void StartCheckForUpdatesTimer()
-    {
-      var updateTimer = new Timer(CheckForUpdates, null, 0, 24 * 60 * 60);
-    }
-
-    private void CheckForUpdates(object state)
+    private void StartCheckForUpdates()
     {
       UpdateState = new ReleaseChecker("nachmore", "AmazonChimeHelper");
+      UpdateState.UnhandledException += UpdateState_UnhandledException;
       UpdateState.MonitorForUpdates(VersionString);
+    }
+
+    private void UpdateState_UnhandledException(object sender, Exception e)
+    {
+      Debug.WriteLine($"(ignored) Exception checking for updates:\n\n{e}");
     }
   }
 }
