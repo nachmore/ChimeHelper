@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Icon="/Icons/fan.ico"
-        Title="Chime Helper Settings" Height="230" Width="400">
+        Title="Chime Helper Settings" Height="400" Width="400">
   <StackPanel>
     <Border Background="#192A38" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="42" VerticalAlignment="Top" Width="574">
       <StackPanel Orientation="Horizontal">
@@ -13,7 +13,7 @@
         <TextBlock VerticalAlignment="Center" FontSize="25" Foreground="White" FontWeight="Light" Margin="5,0,0,0">Settings</TextBlock>
       </StackPanel>
     </Border>
-    <TextBlock Margin="10,10,10,0" TextWrapping="Wrap">You can configure your Personalized ID and Personal ID to enable shortcuts to start a meeting as well as copy meeting details.</TextBlock>
+    <TextBlock Margin="10,10,10,0" TextWrapping="Wrap">You can configure your Personalized ID and Personal ID to enable shortcuts to start a meeting as well as copy meeting details directly from the tray icon.</TextBlock>
 
     <Grid Margin="10,20,20,0">
 
@@ -31,10 +31,16 @@
 
       <TextBlock Grid.Row="0" Grid.Column="0">Personalized ID (eg: "my_awesome_bridge"):</TextBlock>
       <TextBox Grid.Row="0" Grid.Column="1" MaxLength="50" Text="{Binding PersonalizedId, Mode=TwoWay}"></TextBox>
-      
+
       <TextBlock Grid.Row="2" Grid.Column="0">Personal ID (eg: "123456789"):</TextBlock>
       <TextBox Grid.Row="2" Grid.Column="1" MaxLength="20" Text="{Binding PersonalId, Mode=TwoWay}"></TextBox>
     </Grid>
+
+    <Separator Margin="10,10,10,0"/>
+
+    <CheckBox Margin="10,10,10,0" IsChecked="{Binding NotifyOnMeetingStart, Mode=TwoWay}">Show a notification when a meeting is starting</CheckBox>
+
+    <Separator Margin="10,10,10,0"/>
 
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
       <Button Name="btnSave" Click="btnSave_Click" Margin="0,20, 20, 0" Padding="5,0,5,0">Save</Button>

@@ -39,6 +39,7 @@ namespace ChimeHelperUX
 
     public string PersonalId { get; set; }
     public string PersonalizedId { get; set; }
+    public bool NotifyOnMeetingStart { get; set; }
 
     private SettingsWindow()
     {
@@ -67,6 +68,7 @@ namespace ChimeHelperUX
     {
       Properties.Settings.Default.ChimeBridgePersonalID = PersonalId?.Replace(" ", "");
       Properties.Settings.Default.ChimeBridgePersonalizedID = PersonalizedId;
+      Properties.Settings.Default.NotifyOnMeetingStart = NotifyOnMeetingStart;
 
       Properties.Settings.Default.Save();
       Properties.Settings.Default.Reload();
