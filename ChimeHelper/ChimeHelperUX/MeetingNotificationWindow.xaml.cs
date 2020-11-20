@@ -44,5 +44,15 @@ namespace ChimeHelperUX
 
       DataContext = this;
     }
-  }
+
+        private void btnJoinCall_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnIgnore_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+    }
 }

@@ -94,18 +94,6 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>4693B68D1E4CCA32E2F34DA772AC7A49C69B9D17</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>ChimeHelperUX_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>false</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>true</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>Icons\fan.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
@@ -121,6 +109,8 @@
     <Company>nachmore</Company>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/nachmore/AmazonChimeHelper</PackageProjectUrl>
+    <SignAssembly>false</SignAssembly>
+    <StartupObject>ChimeHelperUX.App</StartupObject>
   </PropertyGroup>
   <Target Name="PostBuild" BeforeTargets="PostBuildEvent">
     <Exec Command="&#xD;&#xA;      if $(ConfigurationName) == Release (&#xD;&#xA;        &quot;C:\Program Files (x86)\NSIS\makensis.exe&quot; $(SolutionDir)\InstallScript\ChimeHelperInstaller.nsi&#xD;&#xA;      )" />
