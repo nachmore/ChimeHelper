@@ -86,6 +86,8 @@ namespace ChimeHelperUX
         StartCheckForUpdates();
 
         Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
+
+        MeetingNotificationWindow.CreateAndShow();
       }
     }
 

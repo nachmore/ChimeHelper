@@ -243,6 +243,7 @@ namespace ChimeHelperUX
        );
       }
     }
+
     public ICommand FullChimeStringMenuCommand
     {
       get
