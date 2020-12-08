@@ -116,7 +116,6 @@
     <Exec Command="&#xD;&#xA;      if $(ConfigurationName) == Release (&#xD;&#xA;        &quot;C:\Program Files (x86)\NSIS\makensis.exe&quot; $(SolutionDir)\InstallScript\ChimeHelperInstaller.nsi&#xD;&#xA;      )" />
    </Target>
   <ItemGroup>
-    <None Include="ChimeHelperUX_TemporaryKey.pfx" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
