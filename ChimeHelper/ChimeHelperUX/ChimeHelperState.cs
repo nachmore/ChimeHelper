@@ -71,6 +71,8 @@ namespace ChimeHelperUX
     public string VersionString { get { return _versionString; } }
     public DateTime BuildDate { get { return _versionBuildDate; } }
 
+    private ChimeMeetingMenuItems _meetingMenuItemCache;
+
     private ChimeHelperState(int timerIntervalMinutes = DEFAULT_CHECK_INTERVAL_MIN)
     {
       TimerIntervalMinutes = timerIntervalMinutes;
@@ -84,10 +86,9 @@ namespace ChimeHelperUX
       {
         StartMeetingTimer();
         StartCheckForUpdates();
+        StartCheckForStartingMeeting();
 
         Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
-
-        MeetingNotificationWindow.CreateAndShow();
       }
     }
 
@@ -175,17 +176,19 @@ namespace ChimeHelperUX
       _lastCheck = DateTime.Now;
 
       var meetings = ChimeOutlookHelper.ChimeOutlookHelper.GetMeetings();
-      var meetingMenuItems = new ChimeMeetingMenuItems();
+      _meetingMenuItemCache = new ChimeMeetingMenuItems();
 
       foreach (var meeting in meetings)
       {
-        meetingMenuItems.AddRange(ChimeMeetingMenuItem.Create(meeting));
+        _meetingMenuItemCache.AddRange(ChimeMeetingMenuItem.Create(meeting));
       }
 
       App.Current.Dispatcher.BeginInvoke(new Action(() =>
       {
-        App.TrayIcon.DataContext = (meetingMenuItems.Count > 0 ? meetingMenuItems : ChimeHelperTray.NO_MEETINGS);
+        App.TrayIcon.DataContext = (_meetingMenuItemCache.Count > 0 ? _meetingMenuItemCache : ChimeHelperTray.NO_MEETINGS);
       }));
+
+      CheckForMeetingStart();
     }
 
     private void StartCheckForUpdates()
@@ -193,6 +196,62 @@ namespace ChimeHelperUX
       UpdateState = new ReleaseChecker("nachmore", "AmazonChimeHelper");
       UpdateState.UnhandledException += UpdateState_UnhandledException;
       UpdateState.MonitorForUpdates(VersionString);
+    }
+
+    private Timer _timerCheckForMeetingStart;
+
+    private void StartCheckForStartingMeeting()
+    {
+      // we're already active or the user doesn't actually want this functionality
+      if (_timerCheckForMeetingStart != null || !Properties.Settings.Default.NotifyOnMeetingStart)
+        return;
+
+      _timerCheckForMeetingStart = new Timer(
+                                    CheckForMeetingStart,
+                                    null,
+                                    (60 - DateTime.Now.Second) * 1000,
+                                    60 * 1000);
+    }
+
+    private void StopCheckForStartingMeeting()
+    {
+      if (_timerCheckForMeetingStart != null)
+      {
+        _timerCheckForMeetingStart.Change(Timeout.Infinite, Timeout.Infinite);
+        _timerCheckForMeetingStart = null;
+      }
+    }
+
+    public void CheckForMeetingStart(object stateInfo = null)
+    {
+      if (!Properties.Settings.Default.NotifyOnMeetingStart)
+        return;
+
+      if (_meetingMenuItemCache == null)
+        return;
+
+      // this is mainly for debugging, prevent multiple queued up ticks
+      StopCheckForStartingMeeting();
+
+      var now = DateTime.Now;
+
+      foreach (var item in _meetingMenuItemCache)
+      {
+        
+        if (item.StartTime.Day == now.Day &&
+            item.StartTime.Hour == now.Hour &&
+            item.StartTime.Minute == now.Minute &&
+            !ChimeHelper.Chime.IsMeetingAlreadyJoined(item.Subject))
+        {
+          App.Current.Dispatcher.BeginInvoke(new Action(() =>
+          {
+            MeetingNotificationWindow.CreateAndShow(item);
+          }));
+          break;
+        }
+      }
+
+      StartCheckForStartingMeeting();
     }
 
     private void UpdateState_UnhandledException(object sender, Exception e)

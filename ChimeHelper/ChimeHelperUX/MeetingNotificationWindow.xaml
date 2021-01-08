@@ -6,20 +6,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Icon="/Icons/fan.ico"
-        Title="Chime Helper Settings" Height="300" Width="400">
+        ResizeMode="NoResize"
+        Title="Chime Helper Settings" Height="333" Width="430">
   <StackPanel>
-    <Border Background="#192A38" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="42" Width="403">
+    <Border Background="#192A38" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="42" Width="423">
       <StackPanel Orientation="Horizontal" Margin="0,0,5,0">
-        <TextBlock VerticalAlignment="Center" FontSize="25" Foreground="White" FontWeight="Light" Margin="5,0,0,0" Width="432">📞 Scheduled Chime Call</TextBlock>
+        <Image Height="28" Width="28" Source="/Icons/fan.ico" Margin="10,0,0,0"></Image>
+        <TextBlock VerticalAlignment="Center" FontSize="25" Foreground="White" FontWeight="Light" Margin="5,0,0,0" Width="432">Join Chime Meeting?</TextBlock>
       </StackPanel>
     </Border>
 
-    <TextBlock Margin="10,10,10,0" TextWrapping="Wrap">A Chime Meeting is about to start, you can join it (or ignore it) below. You can also select a specific meeting from the grid. This window will auto hide in <Run Text="{Binding RemainingTimeString, Mode=OneWay}" Name="RemainingTimeText"></Run>.</TextBlock>
+    <TextBlock Margin="10,0,10,0" FontSize="28" TextTrimming="CharacterEllipsis" Text="{Binding DefaultMeeting.Subject, Mode=OneWay}"></TextBlock>
+    <TextBlock Margin="10,0,10,5" FontSize="20">
+      <Run Text="{Binding DefaultMeeting.StartTime, StringFormat=t, Mode=OneWay}"/>
+      -
+      <Run Text="{Binding DefaultMeeting.EndTime, StringFormat=t, Mode=OneWay}"/>
+    </TextBlock>
 
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-      <Button Name="refresh" Click="refresh_Click">Refresh</Button>
-      <Button Name="btnJoinCall" Click="btnJoinCall_Click" Margin="0,20, 20, 0" Padding="5,5,5,5" Width="75" FontSize="30" Foreground="Green" Background="White">📞</Button>
-      <Button Name="btnIgnore" Click="btnIgnore_Click" Margin="0,20,0,0"  Padding="5,5,5,5" Width="75" Foreground="Red" Background="White">
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,5">
+      <Button Name="btnJoinCall" Click="btnJoinCall_Click" Margin="0,0, 20, 0" Padding="5,5,5,5" Width="75" FontSize="30" Foreground="Green" Background="White">📞</Button>
+      <Button Name="btnIgnore" Click="btnIgnore_Click" Margin="0,0,0,0"  Padding="5,5,5,5" Width="75" Foreground="Red" Background="White">
         <Button.Content>
           <TextBlock Height="40" Width="44" FontSize="30" Padding="0,0,0,0" RenderTransformOrigin="0.45,0.6">
             <TextBlock.RenderTransform>
@@ -31,13 +37,15 @@
       </Button>
     </StackPanel>
 
-    <DataGrid x:Name="ChimeMeetings" ItemsSource="{Binding}" 
+    <TextBlock Margin="10,0,10,5" TextWrapping="Wrap">You can choose a different meeting below. This window will close in <Run Text="{Binding AutoHideRemainingTimeString, Mode=OneWay}" Name="RemainingTimeText"></Run>.</TextBlock>
+
+
+    <DataGrid x:Name="ChimeMeetings" ItemsSource="{Binding CurrentMeetings}" 
                   AutoGenerateColumns="False" SelectionMode="Single" 
                   CanUserAddRows="False" CanUserResizeColumns="False" CanUserReorderColumns="False" 
-                  CanUserSortColumns="False" CanUserResizeRows="False"
+                  CanUserSortColumns="False" CanUserResizeRows="False" IsReadOnly="True"
                   HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="LightGray"
-                  Background="#192a38" RowHeaderWidth="0"
-                  Visibility="{Binding IsEmpty, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                  Background="Transparent" RowHeaderWidth="0" Height="105"
                   >
       <DataGrid.Resources>
         <Style TargetType="{x:Type DataGridCell}">

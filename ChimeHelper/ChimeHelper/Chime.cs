@@ -1,12 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ChimeHelper
 {
   public static class Chime
   {
+    #region Native Functions & Helpers
+    delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    private static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, int wParam, [Out] StringBuilder lParam);
+
+    const int WM_GETTEXT = 0xD;
+
+    private static IEnumerable<IntPtr> EnumerateProcessWindowHandles(int processId)
+    {
+      var handles = new List<IntPtr>();
+
+      foreach (ProcessThread thread in Process.GetProcessById(processId).Threads)
+        EnumThreadWindows(thread.Id,
+            (hWnd, lParam) => { handles.Add(hWnd); return true; }, IntPtr.Zero);
+
+      return handles;
+    }
+    #endregion
+
     public const string MEETING_URL_FORMAT = "chime://meeting/?pin={0}";
 
     public static void Join(string pin)
@@ -17,6 +42,33 @@ namespace ChimeHelper
       chimeUrlProcess.StartInfo.FileName = String.Format(MEETING_URL_FORMAT, pin);
 
       chimeUrlProcess.Start();
+    }
+
+    /// <summary>
+    /// Check if a meeting is already joined / opened on the current machine
+    /// </summary>
+    /// <param name="meetingSubject"></param>
+    /// <returns></returns>
+    public static bool IsMeetingAlreadyJoined(string meetingSubject)
+    {
+      var chimeProc = Process.GetProcessesByName("chime");
+
+      // no running Chime
+      if (chimeProc.Length == 0)
+        return false;
+
+      var procId = chimeProc[0].Id;
+
+      foreach (var handle in EnumerateProcessWindowHandles(procId))
+      {
+        var title = new StringBuilder(65535);
+        SendMessage(handle, WM_GETTEXT, title.Capacity, title);
+
+        if (title.ToString() == meetingSubject)
+          return true;
+      }
+
+      return false;
     }
 
     /// <summary>
@@ -86,7 +138,6 @@ namespace ChimeHelper
       if (string.IsNullOrEmpty(target))
         return rv;
 
-      // try to find an ID in a URL
       var re = new Regex(regex, RegexOptions.Multiline | RegexOptions.IgnoreCase);
       var matches = re.Matches(target);
 
