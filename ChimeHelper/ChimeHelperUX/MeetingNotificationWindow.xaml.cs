@@ -42,24 +42,57 @@ namespace ChimeHelperUX
     public static MeetingNotificationWindow _meetingNotificationWindow;
 
     // Not using "Instance" since this Singleton is more of an action
-    public static void CreateAndShow()
+    public static void CreateAndShow(ChimeMeetingMenuItem meetingStartingNow)
     {
       if (_meetingNotificationWindow == null || _meetingNotificationWindow.IsLoaded == false)
         _meetingNotificationWindow = new MeetingNotificationWindow();
 
-      _meetingNotificationWindow.Show();
-      _meetingNotificationWindow.Activate();
-      _meetingNotificationWindow.Topmost = true;
-
-      _meetingNotificationWindow.DataContext = App.TrayIcon.DataContext;
-      _meetingNotificationWindow.RemainingTimeText.DataContext = _meetingNotificationWindow;
+      _meetingNotificationWindow.CurrentMeetings = (ChimeMeetingMenuItems)(App.TrayIcon.DataContext);
 
       _meetingNotificationWindow.ResetAutoHideTimer();
 
+      _meetingNotificationWindow.DefaultMeeting = meetingStartingNow;
+
+      // refresh DataContext since we just set default meeting
+      _meetingNotificationWindow.DataContext = _meetingNotificationWindow;
+
       WindowPositioner.MoveToMouse(_meetingNotificationWindow);
+      _meetingNotificationWindow.Show();
+      //_meetingNotificationWindow.Activate();
+      _meetingNotificationWindow.Topmost = true;
     }
     #endregion
 
+    private ChimeMeetingMenuItem _defaultMeeting;
+    public ChimeMeetingMenuItem DefaultMeeting
+    {
+      get
+      {
+        return _defaultMeeting;
+      }
+
+      set
+      {
+        _defaultMeeting = value;
+        NotifyPropertyChanged();
+      }
+    }
+
+    ChimeMeetingMenuItems _currentMeetings;
+    public ChimeMeetingMenuItems CurrentMeetings
+    {
+      get
+      {
+        return _currentMeetings;
+      }
+
+      set
+      {
+        _currentMeetings = value;
+        NotifyPropertyChanged();
+      }
+    }
+        
     private void ResetAutoHideTimer()
     {
       if (_autoHide != null)
@@ -68,41 +101,40 @@ namespace ChimeHelperUX
         _autoHide.Change(Timeout.Infinite, Timeout.Infinite);
       }
 
-      _remainingAutoHideTime = AUTO_HIDE_SEC;
+      _autohideRemainingSeconds = AUTO_HIDE_SEC;
       _autoHide = new Timer(new TimerCallback(HideWindowCheck), null, 1000, 1000);
     }
 
-    private int _remainingAutoHideTime;
+    private string _autohideRemainingTimeString;
 
-    private string _remainingTimeString;
-
-    public string RemainingTimeString
+    public string AutoHideRemainingTimeString
     {
       get
       {
-        return _remainingTimeString;
+        return _autohideRemainingTimeString;
       }
       set
       {
-        _remainingTimeString = value;
+        _autohideRemainingTimeString = value;
 
         NotifyPropertyChanged();
       }
     }
 
+    private int _autohideRemainingSeconds;
     public int AutoHideRemainingSeconds
     {
 
       get 
       {
-        return _remainingAutoHideTime;
+        return _autohideRemainingSeconds;
       }
       set
       {
-        _remainingAutoHideTime = value;
+        _autohideRemainingSeconds = value;
 
         var span = new TimeSpan(0, 0, value);
-        RemainingTimeString = span.ToString(@"m\:ss");
+        AutoHideRemainingTimeString = span.ToString(@"m\:ss");
         
         NotifyPropertyChanged();
       }
@@ -114,13 +146,7 @@ namespace ChimeHelperUX
 
       if (AutoHideRemainingSeconds < 0)
       {
-        _autoHide.Change(Timeout.Infinite, Timeout.Infinite);
-
-        Dispatcher.BeginInvoke(new Action(() => 
-        {
-
-          Hide();
-        }));
+        CloseMeetingNotification();
       }
     }
 
@@ -128,23 +154,64 @@ namespace ChimeHelperUX
     {
       InitializeComponent();
 
-      DataContext = this;
+      this.Closed += MeetingNotificationWindow_Closed;
+    }
+
+    private void MeetingNotificationWindow_Closed(object sender, EventArgs e)
+    {
+      if (_autoHide != null)
+        _autoHide.Change(Timeout.Infinite, Timeout.Infinite);
     }
 
     private void btnJoinCall_Click(object sender, RoutedEventArgs e)
     {
-
+      ChimeHelper.Chime.Join(DefaultMeeting.Pin);
+      Hide();
     }
 
     private void btnIgnore_Click(object sender, RoutedEventArgs e)
     {
+      CloseMeetingNotification();
+    }
+
+    private void CloseMeetingNotification()
+    {
+      _autoHide.Change(Timeout.Infinite, Timeout.Infinite);
+
+      Dispatcher.BeginInvoke(new Action(() =>
+      {
+        Hide();
+      }));
 
     }
 
-    private void refresh_Click(object sender, RoutedEventArgs e)
+    public ICommand JoinMeetingCommand
     {
-      DataContext = null;
-      DataContext = App.TrayIcon.DataContext;
+      get
+      {
+        return new ActionCommand(
+          (object parameter) =>
+          {
+            var datagrid = (DataGrid)parameter;
+            var meeting = (ChimeMeetingMenuItem)datagrid.SelectedItem;
+
+            // will be null when we clear the selected item, since that also triggers a change event
+            // or when the DG's DataContext is refreshed
+            if (meeting != null)
+            {
+              // clears the selection style
+              datagrid.SelectedCells.Clear();
+
+              // clears the actual selected item, allows the same item to be selected again
+              datagrid.UnselectAll();
+
+              ChimeHelper.Chime.Join(meeting.Pin);
+
+              Hide();
+            }
+          }
+        );
+      }
     }
   }
 }
