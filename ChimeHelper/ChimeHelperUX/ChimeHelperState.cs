@@ -61,6 +61,7 @@ namespace ChimeHelperUX
     public int TimerIntervalMinutes { get; set; }
     public ReleaseChecker UpdateState { get; set; }
 
+    int _lastMeetingNotificationMinute = -1;
 
     private static Version _version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
     private static double _versionDouble = Double.Parse($"{_version.Major}.{_version.Minor}");
@@ -222,8 +223,22 @@ namespace ChimeHelperUX
       }
     }
 
+    /// <summary>
+    /// Checks for the start of a meeting and pops up a join dialog if the user has requested one
+    /// </summary>
+    /// <param name="stateInfo"></param>
     public void CheckForMeetingStart(object stateInfo = null)
     {
+      var now = DateTime.Now;
+
+      // since this function can be called from both the timer as well as "manually", for example
+      // when a meeting refresh occurs, ensure that it does not pop up a dialog more than once 
+      // in a given minute (which will happen if the user closes the dialog then a refresh runs
+      // and causes it to open again)
+
+      if (_lastMeetingNotificationMinute == now.Minute)
+        return;
+
       if (!Properties.Settings.Default.NotifyOnMeetingStart)
         return;
 
@@ -233,7 +248,7 @@ namespace ChimeHelperUX
       // this is mainly for debugging, prevent multiple queued up ticks
       StopCheckForStartingMeeting();
 
-      var now = DateTime.Now;
+      _lastMeetingNotificationMinute = -1;
 
       foreach (var item in _meetingMenuItemCache)
       {
@@ -243,6 +258,9 @@ namespace ChimeHelperUX
             item.StartTime.Minute == now.Minute &&
             !ChimeHelper.Chime.IsMeetingAlreadyJoined(item.Subject))
         {
+
+          _lastMeetingNotificationMinute = now.Minute;
+
           App.Current.Dispatcher.BeginInvoke(new Action(() =>
           {
             MeetingNotificationWindow.CreateAndShow(item);
