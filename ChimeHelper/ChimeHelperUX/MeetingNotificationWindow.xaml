@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Icon="/Icons/fan.ico"
         ResizeMode="NoResize"
+        ShowActivated="False"
         Title="Chime Helper Settings" Height="333" Width="430">
   <StackPanel>
     <Border Background="#192A38" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="42" Width="423">
