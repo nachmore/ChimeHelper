@@ -58,7 +58,6 @@ namespace ChimeHelperUX
 
       WindowPositioner.MoveToMouse(_meetingNotificationWindow);
       _meetingNotificationWindow.Show();
-      //_meetingNotificationWindow.Activate();
       _meetingNotificationWindow.Topmost = true;
     }
     #endregion
