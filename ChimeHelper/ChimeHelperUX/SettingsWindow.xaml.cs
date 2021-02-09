@@ -49,6 +49,7 @@ namespace ChimeHelperUX
 
       PersonalId = Properties.Settings.Default.ChimeBridgePersonalID;
       PersonalizedId = Properties.Settings.Default.ChimeBridgePersonalizedID;
+      NotifyOnMeetingStart = Properties.Settings.Default.NotifyOnMeetingStart;
 
       DataContext = this;
     }
