@@ -55,26 +55,39 @@ UninstPage instfiles
 
 ;--------------------------------
 
-; According to https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/how-to-determine-which-versions-are-installed
-; we can determine if we need to run the .NET installer based on:
-;
-; 1. Check for the existance of *Release* in *HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full*
-; 2. Ensure that the version >= NETRelease (see table on page for version map)
-
 !define NET_RELEASE "461808" 
 !define NETInstaller "NDP472-KB4054531-Web.exe"
 
-Section "Check for .Net Core 3.1 (required)" SecDotNet
+Section "Check for .Net Core 3.1 or newer (required)" SecDotNet
   SectionIn RO
 
   DetailPrint "Searching for required .NET Core version..."
 
+  Var /GLOBAL DotNetFound
+
+  ; search for valid versions (3,5,6)
+  ; findstr will return 0 if not found, so at the end if the counter is
+  ; at 3 we know we need to update and < 3 we have a valid version.
+
   nsExec::ExecToLog 'cmd /c dotnet --info | findstr /c:"Version: 3.1"'
   Pop $0
-  
-  DetailPrint "-> rv: $0"
 
-  IntCmp $0 0 UpdateNotNeeded UpdateDotNet UpdateDotNet
+  IntOp $DotNetFound $DotNetFound + $0
+
+  nsExec::ExecToLog 'cmd /c dotnet --info | findstr /c:"Version: 5"'
+  Pop $0
+
+  IntOp $DotNetFound $DotNetFound + $0
+
+  nsExec::ExecToLog 'cmd /c dotnet --info | findstr /c:"Version: 6"'
+  Pop $0
+
+  IntOp $DotNetFound $DotNetFound + $0
+
+  DetailPrint "-> rv: $DotNetFound"
+
+  ;                        ==               <            >
+  IntCmp $DotNetFound 3 UpdateDotNet UpdateNotNeeded UpdateDotNet
 
   UpdateDotNet:
     DetailPrint "You may need to update / install .NET Core 3.1 or newer. Go to: https://dotnet.microsoft.com/download/dotnet-core/3.1 for details"
