@@ -28,7 +28,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <AssemblyTitle>ChimeHelper</AssemblyTitle>
     <Product>Chime Helper</Product>
-    <Copyright>Copyright ©  2019, 2020</Copyright>
+    <Copyright>Copyright ©  2019, 2020, 2021</Copyright>
     <Deterministic>false</Deterministic>
 
     <!--
@@ -41,7 +41,7 @@
     <DateSuffix>
       $(
         [System.DateTime]::UtcNow.Subtract(
-          $([System.DateTime]::Parse(2020-01-01))
+          $([System.DateTime]::Parse(2021-01-01))
         ).Days
       )
     </DateSuffix>
@@ -79,8 +79,8 @@
     <TimeSuffix>$(TimeSuffix.Trim())</TimeSuffix>
     <DateSuffix>$(DateSuffix.Trim())</DateSuffix>
 
-    <AssemblyVersion>2.1.267.102</AssemblyVersion>
-    <FileVersion>2.1.267.111</FileVersion>
+    <AssemblyVersion>2.2.$(DateSuffix).$(TimeSuffix)</AssemblyVersion>
+    <FileVersion>2.2.$(DateSuffix).$(TimeSuffix)</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
     <PreBuildEvent />
@@ -104,7 +104,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent />
-    <Version>2.1</Version>
+    <Version>2.2</Version>
     <Authors>Oren Nachman</Authors>
     <Company>nachmore</Company>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -150,4 +150,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Release (&quot;C:\Program Files (x86)\NSIS\makensis.exe&quot; $(SolutionDir)\InstallScript\ChimeHelperInstaller.nsi)" />
+  </Target>
 </Project>

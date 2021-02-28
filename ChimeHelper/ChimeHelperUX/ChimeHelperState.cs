@@ -66,7 +66,7 @@ namespace ChimeHelperUX
     private static Version _version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
     private static double _versionDouble = Double.Parse($"{_version.Major}.{_version.Minor}");
     private static string _versionString = $"v{_version.Major}.{_version.Minor}";
-    private static DateTime _versionBuildDate = new DateTime(2020, 1, 1).AddDays(_version.Build).AddMinutes(_version.MinorRevision);
+    private static DateTime _versionBuildDate = new DateTime(2021, 1, 1).AddDays(_version.Build).AddMinutes(_version.MinorRevision);
 
     public double Version { get { return _versionDouble; } }
     public string VersionString { get { return _versionString; } }

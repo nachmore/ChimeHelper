@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Icon="/Icons/fan.ico"
-        Title="Chime Helper Settings" Height="400" Width="400">
+        Title="Chime Helper Settings" Height="300" Width="400">
   <StackPanel>
     <Border Background="#192A38" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="42" VerticalAlignment="Top" Width="574">
       <StackPanel Orientation="Horizontal">
