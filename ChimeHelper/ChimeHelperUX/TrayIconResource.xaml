@@ -344,7 +344,7 @@
           </Grid>
         </Border>
 
-        <Border Height="30" Background="OrangeRed" Visibility="{Binding UpdateState.UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}">
+        <Border Height="30" Background="OrangeRed" Visibility="{Binding UpdateState.UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}, TargetNullValue=Collapsed, FallbackValue=Collapsed}">
 
           <StackPanel VerticalAlignment="Center">
             <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Bold">
@@ -454,7 +454,7 @@
       <ContextMenu
             Background="#192a38" Foreground="White" Margin="0" BorderBrush="#007980" BorderThickness="1" ItemTemplate="{StaticResource MenuItemTemplate}" UsesItemContainerTemplate="True">
 
-        <MenuItem Header="Update Available!" Foreground="OrangeRed" Command="{Binding UpdateNowCommand}" Visibility="{Binding UpdateState.UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        <MenuItem Header="Update Available!" Foreground="OrangeRed" Command="{Binding UpdateNowCommand}" Visibility="{Binding UpdateState.UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}"/>
         <Separator Visibility="{Binding UpdateState.UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
         <MenuItem Header="Start Meeting (Personal ID)" Command="{Binding StartMeetingMenuCommand}"/>
