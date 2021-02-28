@@ -27,7 +27,7 @@
       <chxaml:HyperlinkAuto NavigateUri="https://github.com/nachmore/AmazonChimeHelper">https://github.com/nachmore/AmazonChimeHelper</chxaml:HyperlinkAuto>
     </TextBlock>
 
-    <TextBlock HorizontalAlignment="Right" Margin="0,10,5,0">© 2020, Oren Nachman</TextBlock>
+    <TextBlock HorizontalAlignment="Right" Margin="0,10,5,0">© 2021, Oren Nachman</TextBlock>
 
   </StackPanel>
 </Window>
