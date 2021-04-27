@@ -56,33 +56,6 @@ namespace ChimeOutlookHelper
 
     private static HashSet<string> GetPins(AppointmentItem appointment)
     {
-      /*
-       * ---------------------------
-Chime Helper: AppDomain UnhandledException
----------------------------
-Apologies, an unexpected error has occurred! Hit Ctrl+C and send us the output so that we can fix the issue!
-
-System.NullReferenceException: Object reference not set to an instance of an object.
-
-   at ChimeOutlookHelper.ChimeOutlookHelper.GetPins(AppointmentItem appointment)
-
-   at ChimeOutlookHelper.ChimeOutlookHelper.GetMeetings()
-
-   at ChimeHelperUX.ChimeHelperState.CheckForChimeMeetings(Object stateInfo)
-
-   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
-
---- End of stack trace from previous location where exception was thrown ---
-
-   at System.Threading.TimerQueueTimer.CallCallback(Boolean isThreadPool)
-
-   at System.Threading.TimerQueueTimer.Fire(Boolean isThreadPool)
-
-   at System.Threading.TimerQueue.FireNextTimers()
----------------------------
-OK   
----------------------------
-*/
       var rv = new List<string>();
 
       Debug.WriteLine(appointment.Start + " -> " + appointment.End + ": " + appointment.Subject + "\n\tLocation: " + appointment.Location +

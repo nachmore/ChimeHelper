@@ -110,7 +110,14 @@ namespace ChimeHelper
       // if we couldn't find any URLs try more coarse matching
       if (rv.Count == 0)
       {
-        rv = GetFreeformPinsFromText(text);
+        rv = GetRegexMatches(@"chime.aws/(.*)\b", text);
+
+        if (rv.Count == 0)
+        {
+          // No URL based PINs found, go freeform...
+
+          rv = GetFreeformPinsFromText(text);
+        }
       }
 
       return rv;
