@@ -110,7 +110,8 @@ namespace ChimeHelper
       // if we couldn't find any URLs try more coarse matching
       if (rv.Count == 0)
       {
-        rv = GetRegexMatches(@"chime.aws/(.*)\b", text);
+        // ignore "chime.aws/dialinnumbers" as that redirects to an actual webpage
+        rv = GetRegexMatches(@"chime.aws/(?!dialinnumbers)(.*)\b", text);
 
         if (rv.Count == 0)
         {
