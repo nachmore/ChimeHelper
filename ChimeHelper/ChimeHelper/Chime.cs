@@ -89,7 +89,9 @@ namespace ChimeHelper
         // if we really haven't been able to find anything yet, then last ditch attempt to
         // find personal IDs by looking for a single word (with special characters) after
         // "Chime: " (ignores case)
-        rv = GetRegexMatches(@"Chime:\s*(\S+)\b", text);
+        // "Chime(room)"
+        // etc
+        rv = GetRegexMatches(@"Chime[^A-Za-z]*([A-Za-z]+)[^A-Za-z]", text);
       }
 
       return rv;
