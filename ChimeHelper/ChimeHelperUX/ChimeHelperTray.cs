@@ -19,6 +19,7 @@ namespace ChimeHelperUX
     internal const string DEFAULT_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan.ico";
     internal const string NO_MEETINGS_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan-off.ico";
     internal const string LOADING_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan-loading.ico";
+    internal const string OUTLOOK_NOT_RUNNING_ICON = "pack://application:,,,/ChimeHelper;component/Icons/fan-disabled.ico";
 
     public static readonly ChimeMeetingMenuItems NO_MEETINGS =
       new ChimeMeetingMenuItems(
@@ -30,6 +31,13 @@ namespace ChimeHelperUX
       new ChimeMeetingMenuItems(
         iconURI: LOADING_ICON,
         tooltip: "Chime Helper: Loading..."
+      );
+
+
+    public static readonly ChimeMeetingMenuItems OUTLOOK_NOT_RUNNING =
+      new ChimeMeetingMenuItems(
+        iconURI: OUTLOOK_NOT_RUNNING_ICON,
+        tooltip: "Chime Helper: Outlook not running (can't read calendar)"
       );
 
     public ChimeHelperTray(TaskbarIcon trayIcon)
@@ -309,7 +317,7 @@ $@"You have been invited to an online meeting, powered by Amazon Chime.
         return new ActionCommand(
         (object parameter) =>
         {
-          ChimeHelperState.Instance.CheckForChimeMeetingsAsync();
+          _ = ChimeHelperState.Instance.CheckForChimeMeetingsAsync();
         }
        );
       }
