@@ -41,6 +41,7 @@ namespace ChimeHelperUX
     public string PersonalizedId { get; set; }
     public bool NotifyOnMeetingStart { get; set; }
 
+    public bool AutoLaunchOutlook { get; set; }
     private SettingsWindow()
     {
       InitializeComponent();
@@ -50,6 +51,7 @@ namespace ChimeHelperUX
       PersonalId = Properties.Settings.Default.ChimeBridgePersonalID;
       PersonalizedId = Properties.Settings.Default.ChimeBridgePersonalizedID;
       NotifyOnMeetingStart = Properties.Settings.Default.NotifyOnMeetingStart;
+      AutoLaunchOutlook = Properties.Settings.Default.AutoLaunchOutlook;
 
       DataContext = this;
     }
@@ -70,6 +72,7 @@ namespace ChimeHelperUX
       Properties.Settings.Default.ChimeBridgePersonalID = PersonalId?.Replace(" ", "");
       Properties.Settings.Default.ChimeBridgePersonalizedID = PersonalizedId;
       Properties.Settings.Default.NotifyOnMeetingStart = NotifyOnMeetingStart;
+      Properties.Settings.Default.AutoLaunchOutlook = AutoLaunchOutlook;
 
       Properties.Settings.Default.Save();
       Properties.Settings.Default.Reload();
