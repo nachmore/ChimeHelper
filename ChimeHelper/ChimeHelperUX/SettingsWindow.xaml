@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         ResizeMode="NoResize"
         Icon="/Icons/fan.ico"
-        Title="Chime Helper Settings" Height="300" Width="400">
+        Title="Chime Helper Settings" Height="350" Width="400">
   <StackPanel>
     <Border Background="#192A38" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="42" VerticalAlignment="Top" Width="574">
       <StackPanel Orientation="Horizontal">
@@ -40,6 +40,7 @@
     <Separator Margin="10,10,10,0"/>
 
     <CheckBox Margin="10,10,10,0" IsChecked="{Binding NotifyOnMeetingStart, Mode=TwoWay}">Show a notification when a meeting is starting</CheckBox>
+    <CheckBox Margin="10,10,10,0" IsChecked="{Binding AutoLaunchOutlook, Mode=TwoWay}">Automatically open Outlook if not running</CheckBox>
 
     <Separator Margin="10,10,10,0"/>
 
