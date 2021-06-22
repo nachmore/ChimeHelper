@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChimeHelperUX", "ChimeHelperUX\ChimeHelperUX.csproj", "{4E17FEDD-B841-4D1A-BAD1-79C1758CD2A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChimeHelperUX", "ChimeHelperUX\ChimeHelperUX.csproj", "{4E17FEDD-B841-4D1A-BAD1-79C1758CD2A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChimeOutlookHelper", "ChimeOutlookHelper\ChimeOutlookHelper.csproj", "{CBCFBE2F-239F-4F18-A4FC-A59C44ECBD60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChimeOutlookHelper", "ChimeOutlookHelper\ChimeOutlookHelper.csproj", "{CBCFBE2F-239F-4F18-A4FC-A59C44ECBD60}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{BC5F172A-A91D-4009-B8C1-D8DAE3A24750}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,7 +13,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{
 		InstallScript\ChimeHelperSetup.exe = InstallScript\ChimeHelperSetup.exe
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChimeHelper", "ChimeHelper\ChimeHelper.csproj", "{CBCFBE2F-139F-4F18-A4FC-A59C44ECBD60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChimeHelper", "ChimeHelper\ChimeHelper.csproj", "{CBCFBE2F-139F-4F18-A4FC-A59C44ECBD60}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{025211B9-9A01-4255-9445-E30118E9BA85}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

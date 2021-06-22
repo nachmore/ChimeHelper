@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static ChimeHelperUX.ChimeHelperTray;
 
 namespace ChimeHelperUX
 {
@@ -113,7 +112,7 @@ namespace ChimeHelperUX
             }));
           }
 
-          CheckForChimeMeetings(null);
+          CheckForChimeMeetingsAsync();
         }
       }
     }
@@ -129,30 +128,13 @@ namespace ChimeHelperUX
 
       var initialPeriod = TimerIntervalMinutes - DEFAULT_INTERVAL_OFFSET_MIN - (DateTime.Now.Minute % TimerIntervalMinutes);
 
-      _timer = new Timer(CheckForChimeMeetings, true, 1000, DEFAULT_CHECK_INTERVAL_MIN * 60 * 1000);
+      _timer = new Timer(CheckForChimeMeetingsAsync, true, 1000, DEFAULT_CHECK_INTERVAL_MIN * 60 * 1000);
 
       Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] Spawning Timer with period: " + (DEFAULT_CHECK_INTERVAL_MIN * 60 * 1000));
     }
 
-    public async void CheckForChimeMeetingsAsync()
+    internal async void CheckForChimeMeetingsAsync(object stateInfo)
     {
-
-      await Task.Run(() =>
-      {
-        // TODO: this really needs to be its own function / reevaluate this being part of state
-        App.Current.Dispatcher.Invoke(new Action(() =>
-        {
-          App.TrayIcon.DataContext = ChimeHelperTray.MEETINGS_LOADING;
-        }));
-
-        CheckForChimeMeetings(null);
-      });
-    }
-
-    private void CheckForChimeMeetings(object stateInfo)
-    {
-      Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] CheckForChimeMeetings() called");
-
       // stateInfo will be a bool when called from the Timer
       if (stateInfo is bool)
       {
@@ -174,27 +156,60 @@ namespace ChimeHelperUX
         }
       }
 
-      _lastCheck = DateTime.Now;
+      // explicitly do not await the extra call but drive it forward
+      _ = CheckForChimeMeetingsAsync();
+    }
 
-      var meetings = ChimeOutlookHelper.ChimeOutlookHelper.GetMeetings();
-      _meetingMenuItemCache = new ChimeMeetingMenuItems();
-
-      foreach (var meeting in meetings)
+    internal Task CheckForChimeMeetingsAsync()
+    {
+      // explicitly make this synchronous code async so that it runs in the background
+      // and allows UX to continue updating
+      return Task.Run(async () =>
       {
-        _meetingMenuItemCache.AddRange(ChimeMeetingMenuItem.Create(meeting));
-      }
+        Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] CheckForChimeMeetings() called");
 
-      App.Current.Dispatcher.BeginInvoke(new Action(() =>
-      {
-        App.TrayIcon.DataContext = (_meetingMenuItemCache.Count > 0 ? _meetingMenuItemCache : ChimeHelperTray.NO_MEETINGS);
-      }));
+        // TODO: this really needs to be its own function / reevaluate this being part of state
+        App.Current.Dispatcher.Invoke(new Action(() =>
+        {
+          App.TrayIcon.DataContext = ChimeHelperTray.MEETINGS_LOADING;
+        }));
 
-      CheckForMeetingStart();
+        _lastCheck = DateTime.Now;
+
+        var autoLaunchOutlook = Properties.Settings.Default.AutoLaunchOutlook;
+        var meetings = await ChimeOutlookHelper.ChimeOutlookHelper.GetMeetingsAsync(autoLaunchOutlook);
+
+        _meetingMenuItemCache = new ChimeMeetingMenuItems();
+
+        foreach (var meeting in meetings)
+        {
+          _meetingMenuItemCache.AddRange(ChimeMeetingMenuItem.Create(meeting));
+        }
+
+        _ = App.Current.Dispatcher.BeginInvoke(new Action(() =>
+        {
+
+          var menuItems = ChimeHelperTray.NO_MEETINGS;
+
+          if (_meetingMenuItemCache.Count > 0)
+          {
+            menuItems = _meetingMenuItemCache;
+          } 
+          else if (!ChimeOutlookHelper.ChimeOutlookHelper.OutlookRunning())
+          {
+            menuItems = ChimeHelperTray.OUTLOOK_NOT_RUNNING;
+          }
+
+          App.TrayIcon.DataContext = menuItems;
+        }));
+
+        CheckForMeetingStart();
+      });
     }
 
     private void StartCheckForUpdates()
     {
-      UpdateState = new ReleaseChecker("nachmore", "AmazonChimeHelper");
+      UpdateState = new ReleaseChecker("nachmore", "ChimeHelper");
       UpdateState.UnhandledException += UpdateState_UnhandledException;
       UpdateState.MonitorForUpdates(VersionString);
     }

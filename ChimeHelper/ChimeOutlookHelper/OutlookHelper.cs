@@ -1,27 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Outlook = Microsoft.Office.Interop.Outlook;
-using System.Diagnostics;
 
 namespace ChimeOutlookHelper
 {
-  static class OutlookHelper
+  internal static class OutlookHelper
   {
 
     private const int DEFAULT_SEARCH_HOURS = 1;
+    private const int OUTLOOK_LAUNCH_SLEEP_INTERVAL = 15000;
 
-    public static List<Outlook.Folder> GetCalendars()
+    public static async Task<List<Outlook.Folder>> GetCalendars(bool autoLaunchOutlook)
     {
       var folders = new List<Outlook.Folder>();
+
+      if (!autoLaunchOutlook && !OutlookRunning())
+      {
+        return folders;
+      }
 
       Outlook.Application outlook;
       Outlook.Stores stores;
 
       try
       {
+        await EnsureOutlookIsRunningAsync();
+        
         outlook = new Outlook.Application();
         stores = outlook.Session.Stores;
       }
@@ -73,6 +79,31 @@ namespace ChimeOutlookHelper
         }
 
       return folders;
+    }
+
+    internal static bool OutlookRunning()
+    {
+      var outlookProcs = Process.GetProcessesByName("outlook");
+
+      return outlookProcs.Length > 0;
+    }
+
+    private static async Task EnsureOutlookIsRunningAsync()
+    {
+      if (!OutlookRunning())
+      {
+        var startInfo = new ProcessStartInfo("outlook.exe");
+        startInfo.UseShellExecute = true;
+
+        Process.Start(startInfo);
+
+        await Task.Delay(OUTLOOK_LAUNCH_SLEEP_INTERVAL);
+
+        if (!OutlookRunning())
+        {
+          throw new TimeoutException("Timed out waiting for Outlook to launch");
+        }
+      }
     }
 
     public static List<Outlook.AppointmentItem> GetAppointmentsAroundNow(Outlook.Folder calendar, int hours = DEFAULT_SEARCH_HOURS)

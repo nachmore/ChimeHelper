@@ -5,10 +5,11 @@ using Microsoft.Office.Interop.Outlook;
 using System.Diagnostics;
 using ChimeHelper;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ChimeOutlookHelper
 {
-  public class ChimeOutlookHelper
+  public static class ChimeOutlookHelper
   {
     public struct ChimeMeeting
     {
@@ -18,11 +19,16 @@ namespace ChimeOutlookHelper
       public List<string> Pins { get; set; }
     }
 
-    public static List<ChimeMeeting> GetMeetings()
+    public static bool OutlookRunning()
+    {
+      return OutlookHelper.OutlookRunning();
+    }
+
+    public static async Task<List<ChimeMeeting>> GetMeetingsAsync(bool autoLaunchOutlook)
     {
       var meetings = new List<ChimeMeeting>();
-      var calendars = OutlookHelper.GetCalendars();
-
+      var calendars = await OutlookHelper.GetCalendars(autoLaunchOutlook);
+      
       foreach (var calendar in calendars)
       {
         var appointments = OutlookHelper.GetAppointmentsAroundNow(calendar);
