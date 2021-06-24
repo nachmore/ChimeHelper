@@ -68,7 +68,7 @@ namespace ChimeHelperUX
       get { return _pin; }
       set
       {
-        if (long.TryParse(value, out long parsedPin))
+        if (long.TryParse(value, out var parsedPin))
         {
           // we convert the pin to a number in order to parse it out nicely, but if there
           // are leading zeros (0) we need to add them back in since they will be stripped 
@@ -138,6 +138,7 @@ namespace ChimeHelperUX
         );
       }
     }
+
     public ICommand JoinMeetingCommand
     {
       get
@@ -349,6 +350,25 @@ $@"You have been invited to an online meeting, powered by Amazon Chime.
       }
     }
 
+    public ICommand ResizeColumnOnRowChanges
+    {
+      get
+      {
+        return new ActionCommand(
+        (object parameter) =>
+        {
+          var datagrid = (DataGrid)parameter;
+
+
+          // The DataGrid will automatically grow to accomodate large meeting titles (last column)
+          // but will not shrink back. It's also not enough to just set the length to Auto, it needs
+          // the reset to 0 and then back to Auto in order to shrink properly.
+          datagrid.Columns[^1].Width = 0;
+          datagrid.Columns[^1].Width = DataGridLength.Auto;
+        }
+       );
+      }
+    }
   }
 
 }
