@@ -4,7 +4,7 @@
 
 ChimeHelper gives you direct access to your Chime meetings in your Windows tray so that:
 
-1. You no longer need to open your Outlook calendar to find auto-dial meetings
+1. You no longer need to open your Outlook calendar to find meetings that weren't configured to auto-dial (so they don't show in the Chime UX)
 2. You not longer have to have auto-dial enabled, especially useful when you are invited to a lot of different, overlapping, meetings
 3. If you only use Chime for meetings you don't have to have it open when you're not on a meeting
 
