@@ -270,7 +270,7 @@
 
   <DataTemplate x:Key="MenuItemTemplate">
     <StackPanel>
-      <Button x:Name="ChimeMeeting" Command="{Binding JoinMeetingCommand}" CommandParameter="{Binding}" DockPanel.Dock="Top" Background="Transparent" BorderThickness="0" Foreground="White" HorizontalContentAlignment="Left">
+      <Button x:Name="ChimeMeeting" Command="{Binding}" CommandParameter="{Binding}" DockPanel.Dock="Top" Background="Transparent" BorderThickness="0" Foreground="White" HorizontalContentAlignment="Left">
 
         <Grid>
           <Grid.ColumnDefinitions>
@@ -354,11 +354,12 @@
           </StackPanel>
         </Border>
 
-        <DataGrid x:Name="ChimeMeetings" ItemsSource="{Binding}" 
+        <DataGrid x:Name="ChimeMeetings" ItemsSource="{Binding}"
                   AutoGenerateColumns="False" SelectionMode="Single" 
                   CanUserAddRows="False" CanUserResizeColumns="False" CanUserReorderColumns="False" 
                   CanUserSortColumns="False" CanUserResizeRows="False"
                   HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="LightGray"
+                  EnableRowVirtualization="False"
                   Background="#192a38" RowHeaderWidth="0"
                   Visibility="{Binding IsEmpty, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                   >
@@ -435,6 +436,10 @@
           <i:Interaction.Triggers>
             <i:EventTrigger EventName="SelectionChanged">
               <i:InvokeCommandAction Command="{Binding JoinMeetingCommand}" 
+                CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}" />
+            </i:EventTrigger>
+            <i:EventTrigger EventName="UnloadingRow">
+              <i:InvokeCommandAction Command="{Binding ResizeColumnOnRowChanges}" 
                 CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}" />
             </i:EventTrigger>
           </i:Interaction.Triggers>
