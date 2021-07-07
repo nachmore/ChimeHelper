@@ -38,8 +38,9 @@ namespace ChimeHelper
     {
       var chimeUrlProcess = new Process();
 
+      // strip whitespace out of PINs since Chime sometimes refuses to parse the space
+      chimeUrlProcess.StartInfo.FileName = String.Format(MEETING_URL_FORMAT, pin.Replace(" ", ""));
       chimeUrlProcess.StartInfo.UseShellExecute = true;
-      chimeUrlProcess.StartInfo.FileName = String.Format(MEETING_URL_FORMAT, pin);
 
       chimeUrlProcess.Start();
     }
