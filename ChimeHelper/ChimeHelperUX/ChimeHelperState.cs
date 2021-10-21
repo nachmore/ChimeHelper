@@ -40,7 +40,7 @@ namespace ChimeHelperUX
     /// For example, interval = 15, offset = 2 -> will check at:
     /// :58, :13, :28, :43
     /// </summary>
-    private const int DEFAULT_INTERVAL_OFFSET_MIN = 3;
+    private const int DEFAULT_INTERVAL_OFFSET_MIN = 1;
 
     /// <summary>
     /// The interval of time after which our current cache of meetings is considered to be stale
@@ -62,10 +62,10 @@ namespace ChimeHelperUX
 
     int _lastMeetingNotificationMinute = -1;
 
-    private static Version _version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-    private static double _versionDouble = Double.Parse($"{_version.Major}.{_version.Minor}");
-    private static string _versionString = $"v{_version.Major}.{_version.Minor}";
-    private static DateTime _versionBuildDate = new DateTime(2021, 1, 1).AddDays(_version.Build).AddMinutes(_version.MinorRevision);
+    private static readonly Version _version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+    private static readonly double _versionDouble = Double.Parse($"{_version.Major}.{_version.Minor}");
+    private static readonly string _versionString = $"v{_version.Major}.{_version.Minor}";
+    private static readonly DateTime _versionBuildDate = new DateTime(2021, 1, 1).AddDays(_version.Build).AddMinutes(_version.MinorRevision);
 
     public double Version { get { return _versionDouble; } }
     public string VersionString { get { return _versionString; } }
@@ -121,19 +121,29 @@ namespace ChimeHelperUX
     {
       // timer runs as:
       // 1. 1st run happens after the first second
-      // 2. 2nd run aligns to the closest TimerIntervalMinutes (initialPeriod)
+      // 2. 2nd run aligns to the closest TimerIntervalMinutes (initialPeriod) and approximately :00 seconds
       // 3. 3rd run+ happens every TimerIntervalMinutes
 
+      var now = DateTime.Now;
+      var initialPeriod = TimerIntervalMinutes - DEFAULT_INTERVAL_OFFSET_MIN - (now.Minute % TimerIntervalMinutes);
+
+      // if we're already within the offset period then this will be negative, so the next iteration should start
+      // within the next interval minus however much we're already into that interval.
+      //
+      // for example, if we're at :44 with a 15 minute interval and a 3 minute offset then the next run should
+      // happen at :57. initialPeriod will be -2 so we'll run in (interval: 15) - 2: 13 minutes (which is :57).
+      if (initialPeriod <= 0)
+        initialPeriod += TimerIntervalMinutes;
+
+      var initialPeriodMillis = initialPeriod * 60 * 1000 - (now.Second * 1000);
+
+      _timer = new Timer(CheckForChimeMeetings, true, 1000, initialPeriodMillis);
       _timerState = TimerState.FIRST;
 
-      var initialPeriod = TimerIntervalMinutes - DEFAULT_INTERVAL_OFFSET_MIN - (DateTime.Now.Minute % TimerIntervalMinutes);
-
-      _timer = new Timer(CheckForChimeMeetingsAsync, true, 1000, DEFAULT_CHECK_INTERVAL_MIN * 60 * 1000);
-
-      Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] Spawning Timer with period: " + (DEFAULT_CHECK_INTERVAL_MIN * 60 * 1000));
+      Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] Spawning Timer with period: " + (initialPeriodMillis));
     }
 
-    internal async void CheckForChimeMeetingsAsync(object stateInfo)
+    internal void CheckForChimeMeetings(object stateInfo)
     {
       // stateInfo will be a bool when called from the Timer
       if (stateInfo is bool)
@@ -149,10 +159,12 @@ namespace ChimeHelperUX
           // with a 2 minute offset then check on the :58, :13, :28, :43), so immediately reset the
           // timer so that it triggers regardless of how long the actual check takes to run
 
-          Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] Timer Moving to Ongoing");
+          var interval = TimerIntervalMinutes * 60 * 1000;
 
           _timerState = TimerState.ONGOING;
-          _timer.Change(TimerIntervalMinutes * 60 * 1000, TimerIntervalMinutes * 60 * 1000);
+          _timer.Change(interval, interval);
+
+          Debug.WriteLine(DateTime.Now + $":[ChimeHelperState] Timer Moving to Ongoing: Minute: {DateTime.Now.Minute} Interval: {TimerIntervalMinutes} minutes");
         }
       }
 
