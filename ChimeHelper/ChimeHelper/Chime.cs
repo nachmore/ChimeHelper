@@ -92,7 +92,7 @@ namespace ChimeHelper
         // "Chime: " (ignores case)
         // "Chime(room)"
         // etc
-        rv = GetRegexMatches(@"Chime[^A-Za-z]*([A-Za-z]+)[^A-Za-z]", text);
+        rv = GetRegexMatches(@"Chime[^A-Za-z\r\n]*([A-Za-z]+)[^A-Za-z]", text);
       }
 
       return rv;
