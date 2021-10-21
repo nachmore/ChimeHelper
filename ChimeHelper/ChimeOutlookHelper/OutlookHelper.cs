@@ -74,6 +74,10 @@ namespace ChimeOutlookHelper
           catch (Exception e)
           {
             // Not every root folder has a calendar (for example, Public folders), so this exception can be ignored
+            // This also catches cases where store cannot be retrieved from a specific index (even though the API
+            // says it is there. In those cases you'll see something like:
+            //  System.Runtime.InteropServices.COMException (0x80040119): Outlook cannot start because a data file to
+            //  send and receive messages cannot be found. Check your settings in this Microsoft Outlook profile. <snip>
             Debug.WriteLine($"Failed to get Calendar for {store?.DisplayName} type: {store?.ExchangeStoreType}:\n{e}");
           }
         }
@@ -162,8 +166,6 @@ namespace ChimeOutlookHelper
       foreach (Outlook.AppointmentItem item in restricted)
       {
         rv.Add(item);
-
-        Debug.WriteLine("++: " + item.Start + " -> " + item.End + ": " + item.Subject);
       }
 
       return rv;
