@@ -79,8 +79,8 @@
     <TimeSuffix>$(TimeSuffix.Trim())</TimeSuffix>
     <DateSuffix>$(DateSuffix.Trim())</DateSuffix>
 
-    <AssemblyVersion>2.5.$(DateSuffix).$(TimeSuffix)</AssemblyVersion>
-    <FileVersion>2.5.$(DateSuffix).$(TimeSuffix)</FileVersion>
+    <AssemblyVersion>2.6.$(DateSuffix).$(TimeSuffix)</AssemblyVersion>
+    <FileVersion>2.6.$(DateSuffix).$(TimeSuffix)</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
     <PreBuildEvent />
@@ -106,7 +106,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent />
-    <Version>2.5</Version>
+    <Version>2.6</Version>
     <Authors>Oren Nachman</Authors>
     <Company>nachmore</Company>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
