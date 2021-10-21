@@ -64,16 +64,17 @@ namespace ChimeOutlookHelper
     {
       var rv = new List<string>();
 
-      Debug.WriteLine(appointment.Start + " -> " + appointment.End + ": " + appointment.Subject + "\n\tLocation: " + appointment.Location +
-        "\n\tRequired Attendees: " + appointment.RequiredAttendees + "\n\tOptional Attendees: " + appointment.OptionalAttendees);
-
       rv.AddRange(Chime.GetPinsFromAttendees(appointment.OptionalAttendees));
       rv.AddRange(Chime.GetPinsFromAttendees(appointment.RequiredAttendees));
 
       rv.AddRange(Chime.GetPinsFromText(appointment.Location));
       rv.AddRange(Chime.GetPinsFromText(appointment.Body));
 
+      /*
+      Debug.WriteLine(appointment.Start + " -> " + appointment.End + ": " + appointment.Subject + "\n\tLocation: " + appointment.Location +
+        "\n\tRequired Attendees: " + appointment.RequiredAttendees + "\n\tOptional Attendees: " + appointment.OptionalAttendees);
       Debug.WriteLine("\tPins: " + string.Join("\n\t", rv));
+      */
 
       return new HashSet<string>(rv);
     }
