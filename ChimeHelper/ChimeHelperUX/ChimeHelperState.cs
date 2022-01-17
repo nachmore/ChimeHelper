@@ -52,11 +52,6 @@ namespace ChimeHelperUX
     private Timer _timer;
     private DateTime _lastCheck;
 
-    private enum TimerState { STOPPED, FIRST, SECOND, ONGOING }
-
-    // this could be passes as stateInfo to the Timer, but is useful for debugging
-    private TimerState _timerState;
-
     public int TimerIntervalMinutes { get; set; }
     public ReleaseChecker UpdateState { get; set; }
 
@@ -78,18 +73,19 @@ namespace ChimeHelperUX
       TimerIntervalMinutes = timerIntervalMinutes;
     }
 
+    ~ChimeHelperState()
+    {
+      // static event which must be explicitly detached
+      Microsoft.Win32.SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
+    }
+
     public void StartState()
     {
-      Debug.Assert(_timerState == TimerState.STOPPED);
-
-      if (_timerState == TimerState.STOPPED)
-      {
         StartMeetingTimer();
         StartCheckForUpdates();
         StartCheckForStartingMeeting();
 
         Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
-      }
     }
 
     private void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
@@ -119,63 +115,48 @@ namespace ChimeHelperUX
 
     private void StartMeetingTimer()
     {
-      // timer runs as:
-      // 1. 1st run happens after the first second
-      // 2. 2nd run aligns to the closest TimerIntervalMinutes (initialPeriod) and approximately :00 seconds
-      // 3. 3rd run+ happens every TimerIntervalMinutes
+      _timer = new Timer(CheckForChimeMeetingsTimerCallback, true, 1000, TimerIntervalMinutes);
 
+      Debug.WriteLine($"{DateTime.Now}:[ChimeHelperState]:StartMeetingTimer Meeting Timer kicked off");
+    }
+
+    /// <summary>
+    /// The meeting timer needs to run periodically aligned to wall clock time, for example one minute before meetings
+    /// are normaly scheduled to start (for example: :14, :29, :44, :59), but due to drift just running it every
+    /// TimerIntervalMinutes causes the timer to start firing minutes late.
+    ///
+    /// This function schedules the next call to happen correctly.
+    /// </summary>
+    private void SetMeetingCheckTimerInterval()
+    {
       var now = DateTime.Now;
-      var initialPeriod = TimerIntervalMinutes - DEFAULT_INTERVAL_OFFSET_MIN - (now.Minute % TimerIntervalMinutes);
+      var dueTime = TimerIntervalMinutes - DEFAULT_INTERVAL_OFFSET_MIN - (now.Minute % TimerIntervalMinutes);
 
       // if we're already within the offset period then this will be negative, so the next iteration should start
       // within the next interval minus however much we're already into that interval.
       //
       // for example, if we're at :44 with a 15 minute interval and a 3 minute offset then the next run should
       // happen at :57. initialPeriod will be -2 so we'll run in (interval: 15) - 2: 13 minutes (which is :57).
-      if (initialPeriod <= 0)
-        initialPeriod += TimerIntervalMinutes;
+      if (dueTime <= 0)
+        dueTime += TimerIntervalMinutes;
 
-      var initialPeriodMillis = initialPeriod * 60 * 1000 - (now.Second * 1000);
+      var dueTimeMillis = dueTime * 60 * 1000 - (now.Second * 1000);
 
-      _timer = new Timer(CheckForChimeMeetings, true, 1000, initialPeriodMillis);
-      _timerState = TimerState.FIRST;
-
-      Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] Spawning Timer with period: " + (initialPeriodMillis));
+      _timer.Change(dueTimeMillis, TimerIntervalMinutes);
     }
 
-    internal void CheckForChimeMeetings(object stateInfo)
+    internal void CheckForChimeMeetingsTimerCallback(object stateInfo)
     {
-      // stateInfo will be a bool when called from the Timer
-      if (stateInfo is bool)
-      {
-        if (_timerState == TimerState.FIRST)
-        {
-          Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] Timer Moving to 2nd state");
-          _timerState = TimerState.SECOND;
-        }
-        else if (_timerState == TimerState.SECOND)
-        {
-          // we want to be able to run aligned to the interval boundary - offset (so if it's 15 minutes,
-          // with a 2 minute offset then check on the :58, :13, :28, :43), so immediately reset the
-          // timer so that it triggers regardless of how long the actual check takes to run
-
-          var interval = TimerIntervalMinutes * 60 * 1000;
-
-          _timerState = TimerState.ONGOING;
-          _timer.Change(interval, interval);
-
-          Debug.WriteLine(DateTime.Now + $":[ChimeHelperState] Timer Moving to Ongoing: Minute: {DateTime.Now.Minute} Interval: {TimerIntervalMinutes} minutes");
-        }
-      }
-
       // explicitly do not await the extra call but drive it forward
       _ = CheckForChimeMeetingsAsync();
+
+      SetMeetingCheckTimerInterval();
     }
 
     internal Task CheckForChimeMeetingsAsync()
     {
       // explicitly make this synchronous code async so that it runs in the background
-      // and allows UX to continue updating
+      // and allows the UX to continue updating
       return Task.Run(async () =>
       {
         Debug.WriteLine(DateTime.Now + ":[ChimeHelperState] CheckForChimeMeetings() called");
@@ -206,7 +187,7 @@ namespace ChimeHelperUX
           if (_meetingMenuItemCache.Count > 0)
           {
             menuItems = _meetingMenuItemCache;
-          } 
+          }
           else if (!ChimeOutlookHelper.ChimeOutlookHelper.OutlookRunning())
           {
             menuItems = ChimeHelperTray.OUTLOOK_NOT_RUNNING;
@@ -279,7 +260,7 @@ namespace ChimeHelperUX
 
       foreach (var item in _meetingMenuItemCache)
       {
-        
+
         if (item.StartTime.Day == now.Day &&
             item.StartTime.Hour == now.Hour &&
             item.StartTime.Minute == now.Minute &&
